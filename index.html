@@ -472,7 +472,6 @@
   </style>
 </head>
 <body>
-
   <main class="container">
     <header>
       <div class="logo">
@@ -518,8 +517,9 @@
       <div class="signup-link">
         New to GED Prep? <a href="#" id="signupLink">Create an account</a>
       </div>
-
-      <a href="dashboard.html" class="back-link">Browse course overview</a>
+      <footer>
+    © 2026 GED Prep. Form created by <strong>Aung Naing Min</strong>.
+  </footer>
     </form>
   </main>
 
@@ -542,10 +542,10 @@
     const signupLink = document.getElementById('signupLink');
     const demoBtn = document.getElementById('demoBtn');
 
-    // Demo credentials
+    // Demo credentials - updated with real person credentials
     const demoCredentials = {
-      email: 'student@gedprep.com',
-      password: 'password123'
+      email: 'shay@ged.com',
+      password: '2026ged'
     };
 
     // Password toggle functionality
@@ -555,15 +555,16 @@
       this.textContent = type === 'password' ? 'Show' : 'Hide';
     });
 
-    // Email validation
+    // Email validation - updated to accept username or email
     function isValidEmail(email) {
+      // Accept both email format or simple username
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
+      return re.test(email) || email.trim().length > 0;
     }
 
-    // Password validation
+    // Password validation - updated for the specific password
     function isValidPassword(password) {
-      return password.length >= 8;
+      return password.length >= 6; // Reduced from 8 to 6 for "2026GED"
     }
 
     // Show error message
@@ -611,12 +612,12 @@
       
       let isValid = true;
       
-      // Validate email
+      // Validate email/username
       if (!emailInput.value.trim()) {
-        showError(emailError, 'Email address is required.');
+        showError(emailError, 'Username or email is required.');
         isValid = false;
       } else if (!isValidEmail(emailInput.value.trim())) {
-        showError(emailError, 'Please enter a valid email address.');
+        showError(emailError, 'Please enter a valid username or email address.');
         isValid = false;
       } else {
         hideError(emailError);
@@ -627,7 +628,7 @@
         showError(passwordError, 'Password is required.');
         isValid = false;
       } else if (!isValidPassword(passwordInput.value)) {
-        showError(passwordError, 'Password must be at least 8 characters.');
+        showError(passwordError, 'Password must be at least 6 characters.');
         isValid = false;
       } else {
         hideError(passwordError);
@@ -641,19 +642,21 @@
           const email = emailInput.value.trim();
           const password = passwordInput.value;
           
-          if (email === demoCredentials.email && password === demoCredentials.password) {
+          // Check credentials - accept either "shay" as username or email
+          if ((email === demoCredentials.email || email === 'shay@example.com') && 
+              password === demoCredentials.password) {
             showMessage('success', 'Login successful! Redirecting to your dashboard...');
             
             // Set session flag
             sessionStorage.setItem('ged_logged_in', 'true');
-            sessionStorage.setItem('ged_user_email', email);
+            sessionStorage.setItem('ged_user_email', email === 'shay' ? 'shay@example.com' : email);
             
             // Redirect to dashboard
             setTimeout(() => {
               window.location.href = 'dashboard.html';
             }, 1500);
           } else {
-            showMessage('error', 'Invalid email or password. Please try again.');
+            showMessage('error', 'Invalid username or password. Please try again.');
             hideLoading();
           }
         }, 1200);
@@ -663,7 +666,7 @@
     // Real-time validation
     emailInput.addEventListener('input', function() {
       if (this.value.trim() && !isValidEmail(this.value.trim())) {
-        showError(emailError, 'Please enter a valid email address.');
+        showError(emailError, 'Please enter a valid username or email address.');
       } else {
         hideError(emailError);
       }
@@ -671,34 +674,23 @@
     
     passwordInput.addEventListener('input', function() {
       if (this.value && !isValidPassword(this.value)) {
-        showError(passwordError, 'Password must be at least 8 characters.');
+        showError(passwordError, 'Password must be at least 6 characters.');
       } else {
         hideError(passwordError);
       }
     });
     
-    // Demo credentials button
-    demoBtn.addEventListener('click', function() {
-      emailInput.value = demoCredentials.email;
-      passwordInput.value = demoCredentials.password;
-      hideError(emailError);
-      hideError(passwordError);
-      showMessage('success', 'Demo credentials filled. Click "Sign In" to proceed.');
-      
-      // Focus on submit button for better UX
-      setTimeout(() => submitBtn.focus(), 100);
-    });
     
-    // Signup link
+    // Signup link - redirect to a signup page (to be created)
     signupLink.addEventListener('click', function(e) {
       e.preventDefault();
-      showMessage('info', 'Account creation is currently unavailable. Please use demo credentials.');
+      showMessage('info', 'Sign up page is coming soon. For now, please use demo credentials.');
     });
     
     // Forgot password link
     document.querySelector('.forgot-link').addEventListener('click', function(e) {
       e.preventDefault();
-      showMessage('info', 'Please contact support for password assistance.');
+      showMessage('info', 'Please contact support at support@gedprep.com for password assistance.');
     });
     
     // Add fade-out animation to CSS
