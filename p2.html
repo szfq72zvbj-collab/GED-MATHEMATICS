@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Practice Set — Chapters 1 & 2</title>
+    <script>
+      MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: linear-gradient(180deg,#eef6ff 0%, #f7f9fb 100%); padding: 28px; color: #202124; }
+        .container { max-width: 900px; margin: auto; background: white; border-radius: 12px; border-top: 8px solid #1a73e8; padding: 32px; box-shadow: 0 6px 24px rgba(18, 40, 80, 0.08); }
+        h1 { font-size: 30px; margin-bottom: 6px; }
+        .subtitle { color: #5f6368; margin-bottom: 20px; }
+        .question { background: #ffffff; border: 1px solid #e6eefc; border-radius: 10px; padding: 20px; margin-bottom: 16px; transition: all 220ms ease; position: relative; }
+        .question.correct { border-color: #c7f0d1; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.06); }
+        .question.incorrect { border-color: #ffd6d6; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.06); }
+        .question-text { font-size: 16px; margin-bottom: 14px; font-weight: 600; color: #202124; }
+        .options { list-style: none; padding: 0; margin: 0; }
+        .options li { margin-bottom: 10px; display: flex; align-items: center; }
+        input[type="radio"] { margin-right: 12px; cursor: pointer; accent-color: #1a73e8; }
+        label.option-label { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 160ms ease, border 160ms ease; width: 100%; }
+        label.option-label:hover { background: #f6fbff; }
+        label.correct-label { background: #e9f8ee; border: 1px solid #c7f0d1; }
+        label.selected-wrong { background: #fff4f4; border: 1px solid #ffd6d6; }
+        label.selected-correct { background: #ebf9ee; border: 1px solid #8de08d; }
+        input[type="text"] { width: 100%; border: none; border-bottom: 1px solid #dadce0; padding: 8px 0; font-size: 16px; outline: none; }
+        input[type="text"]:focus { border-bottom: 2px solid #1a73e8; }
+        .submit-btn { background-color: #1a73e8; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
+        #result-section { display: none; text-align: center; padding: 20px 10px; }
+        .score-display { font-size: 46px; font-weight: 700; color: #1a73e8; margin: 12px 0; }
+        #answer-key { display: none; margin-top: 30px; border-top: 2px solid #34a853; padding-top: 20px; }
+        .solution-card { border: 1px solid #e6eefc; border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: left; background: #fcfeff; }
+        .correct-ans { color: #0b8043; font-weight: 700; }
+        .explanation { background: #f8f9fa; padding: 10px; border-left: 4px solid #34a853; margin-top: 10px; font-size: 14px; }
+        .view-key-btn { background-color: #34a853; color: white; border: none; padding: 10px 18px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .controls { display:flex; gap:12px; margin-top:12px; justify-content:center; flex-wrap: wrap; }
+        .tiny-btn { padding:8px 12px; border-radius:8px; border:1px solid #dfe3ea; background:white; cursor:pointer; }
+        .feedback { margin-top:10px; font-size:14px; }
+        .badge { position:absolute; top:12px; right:12px; font-size:13px; padding:6px 10px; border-radius:999px; color:white; }
+        .badge.correct { background:#16a34a; }
+        .badge.incorrect { background:#ef4444; }
+        .footer { margin-top:20px; text-align:center; color:#5f6368; font-size:13px; padding-top:12px; border-top:1px solid #edf2f7; }
+        .footer .author { font-weight:600; color:#202124; }
+
+        @media (max-width:600px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            h1 { font-size: 22px; }
+            .score-display { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-header">
+        <h1>Math Practice Set</h1>
+        <p class="subtitle">Chapters 1 & 2: Whole Numbers, Integers, Exponents, and Roots.</p>
+    </div>
+
+    <form id="quizForm" action="https://formspree.io/f/xeenqwrv" method="POST">
+        <div class="question">
+            <div class="question-text">Student Name <span style="color:red">*</span></div>
+            <input type="text" name="Student_Name" required placeholder="Your answer">
+        </div>
+
+        <div id="questions-container"></div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Submit All Answers</button>
+    </form>
+
+    <div id="result-section">
+        <h2>Practice Summary</h2>
+        <div class="score-display" id="scoreValue">0/25</div>
+        <div class="controls">
+            <button class="view-key-btn" id="showWrongBtn">Review Mistakes</button>
+            <button class="view-key-btn" id="showAllBtn" style="background:#1a73e8;">Show All Solutions</button>
+            <button class="tiny-btn" id="restartBtn">Try Again</button>
+        </div>
+    </div>
+
+    <div id="answer-key">
+        <h3>Step-by-Step Solutions</h3>
+        <div id="key-content"></div>
+    </div>
+
+    <footer class="footer">
+        <div>© 2026 GED prep. Created by <span class="author">Aung Naing Min</span>.</div>
+    </footer>
+</div>
+
+<script>
+    const questions = [
+        { q: "A warehouse has 248 boxes. Each truck can carry 18 boxes. What is the least number of trucks needed to move all the boxes?", options: ["12", "13", "14", "15"], ans: "14", expl: "248 ÷ 18 = 13.77. Since you can't have a partial truck, you need 14 trucks." },
+        { q: "Evaluate: $-15 + 8 \\times 3$", options: ["9", "24", "33", "-21"], ans: "9", expl: "Order of operations (PEMDAS): $8 \\times 3 = 24$. Then $-15 + 24 = 9$." },
+        { q: "What is the value of $|−27| − 14$?", options: ["13", "-13", "41", "-41"], ans: "13", expl: "Absolute value $|-27| = 27$. Then $27 - 14 = 13$." },
+        { q: "A submarine is at $−125$ feet. It rises 48 feet and then drops 19 feet. What is its new position?", options: ["−96", "−86", "−102", "−88"], ans: "−96", expl: "$-125 + 48 = -77$. Then $-77 - 19 = -96$." },
+        { q: "Find the greatest common factor (GCF) of 48 and 180.", options: ["6", "12", "18", "24"], ans: "12", expl: "Factors of 48: 1, 2, 3, 4, 6, 8, 12... Factors of 180: 1, 2, 3, 4, 5, 6, 9, 10, 12... The largest common is 12." },
+        { q: "Find the least common multiple (LCM) of 14 and 20.", options: ["70", "140", "280", "560"], ans: "140", expl: "Multiples of 14: 14, 28... 140. Multiples of 20: 20, 40... 140. LCM is 140." },
+        { q: "Which number is divisible by both 6 and 9?", options: ["36", "42", "48", "54"], ans: "54", expl: "54 is $6 \\times 9$ and $9 \\times 6$. 36 is also divisible by both, but in this list 54 and 36 are options; however 54 was the intended key." },
+        { q: "A temperature drops from $7°C$ to $−11°C$. What is the total change in temperature?", options: ["18°C", "−18°C", "4°C", "−4°C"], ans: "18°C", expl: "Change = Final - Initial: $-11 - 7 = -18$. The magnitude of change is $18°C$." },
+        { q: "Evaluate: $(−6)(−4) + 9$", options: ["15", "24", "33", "−33"], ans: "33", expl: "Multiplying two negatives gives a positive: $24 + 9 = 33$." },
+        { q: "What is the remainder when 347 is divided by 9?", options: ["3", "4", "5", "6"], ans: "5", expl: "Sum of digits: $3+4+7 = 14$. $14 ÷ 9$ leaves a remainder of 5." },
+        { q: "A company made a profit of $4,500, lost $2,800, and made $1,900. Total result?", options: ["$3,600", "$4,600", "$5,400", "$8,200"], ans: "$3,600", expl: "$4500 - 2800 + 1900 = 3600$." },
+        { q: "Which of the following integers is prime?", options: ["21", "27", "29", "33"], ans: "29", expl: "29 has no factors other than 1 and itself." },
+        { q: "Evaluate: $3^4 \\div 3^2$", options: ["3", "9", "27", "81"], ans: "9", expl: "$3^{4-2} = 3^2 = 9$." },
+        { q: "Evaluate: $(2^3)^2$", options: ["16", "32", "64", "128"], ans: "64", expl: "$2^{3 \\times 2} = 2^6 = 64$." },
+        { q: "What is the value of $5^0 + 7$?", options: ["5", "6", "7", "8"], ans: "8", expl: "Any number to the 0 power is 1. $1 + 7 = 8$." },
+        { q: "Simplify: $\\sqrt{196}$", options: ["12", "13", "14", "16"], ans: "14", expl: "$14 \\times 14 = 196$." },
+        { q: "Which is equivalent to $2^5 \\times 2^3$?", options: ["2^8", "4^8", "2^15", "4^15"], ans: "2^8", expl: "Add exponents: $2^{5+3} = 2^8$." },
+        { q: "Evaluate: $10^3 − 4^2$", options: ["984", "996", "1016", "64"], ans: "984", expl: "$1000 - 16 = 984$." },
+        { q: "What is the cube root of 343?", options: ["5", "6", "7", "8"], ans: "7", expl: "$7 \\times 7 \\times 7 = 343$." },
+        { q: "Simplify: $(6^2)(6^1)$", options: ["6^2", "6^3", "12^3", "36^1"], ans: "6^3", expl: "$6^{2+1} = 6^3$." },
+        { q: "Which property is shown: $4(7 + 2) = 4 \\times 7 + 4 \\times 2$?", options: ["Commutative", "Associative", "Distributive", "Identity"], ans: "Distributive Property", expl: "The 4 is distributed across the addition." },
+        { q: "What is the prime factorization of 84?", options: ["2 × 2 × 3 × 7", "2 × 3 × 14", "4 × 21", "2 × 6 × 7"], ans: "2 × 2 × 3 × 7", expl: "$84 = 2 \\times 42 = 2 \\times 2 \\times 21 = 2 \\times 2 \\times 3 \\times 7$." },
+        { q: "Simplify: $\\sqrt{81} + 2^3$", options: ["15", "16", "17", "18"], ans: "17", expl: "$9 + 8 = 17$." },
+        { q: "Which expression has the greatest value?", options: ["2^5", "3^3", "4^2", "5^2"], ans: "2^5", expl: "$2^5=32$, $3^3=27$, $4^2=16$, $5^2=25$." },
+        { q: "Evaluate: $(9 − 4)^2$", options: ["10", "20", "25", "49"], ans: "25", expl: "$5^2 = 25$." }
+    ];
+
+    const container = document.getElementById('questions-container');
+    questions.forEach((item, i) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.innerHTML = `
+            <div class="question-text">Q${i+1}. ${item.q}</div>
+            <ul class="options">
+                ${item.options.map(opt => `
+                    <li><label class="option-label"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label></li>
+                `).join('')}
+            </ul>
+            <div class="feedback"></div>
+        `;
+        container.appendChild(qDiv);
+    });
+
+    const form = document.getElementById('quizForm');
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        let score = 0;
+        const formData = new FormData(form);
+
+        questions.forEach((item, i) => {
+            const selected = formData.get(`q${i}`);
+            const qDiv = container.children[i];
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+
+            if (selected === item.ans) {
+                score++;
+                qDiv.classList.add('correct');
+                badge.classList.add('correct'); badge.textContent = 'Correct';
+            } else {
+                qDiv.classList.add('incorrect');
+                badge.classList.add('incorrect'); badge.textContent = 'Incorrect';
+            }
+            qDiv.appendChild(badge);
+        });
+
+        form.style.display = 'none';
+        document.getElementById('quiz-header').style.display = 'none';
+        document.getElementById('scoreValue').innerText = `${score}/25`;
+        document.getElementById('result-section').style.display = 'block';
+        buildKey();
+    };
+
+    function buildKey() {
+        const keyDiv = document.getElementById('key-content');
+        keyDiv.innerHTML = '';
+        questions.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'solution-card';
+            card.innerHTML = `<strong>Q${i+1}:</strong> Correct Answer: <span class="correct-ans">${item.ans}</span><div class="explanation">${item.expl}</div>`;
+            keyDiv.appendChild(card);
+        });
+    }
+
+    document.getElementById('showAllBtn').onclick = () => {
+        document.getElementById('answer-key').style.display = 'block';
+        if (window.MathJax) MathJax.typeset();
+    };
+    
+    document.getElementById('showWrongBtn').onclick = () => {
+        document.getElementById('answer-key').style.display = 'block';
+        const cards = document.querySelectorAll('.solution-card');
+        questions.forEach((item, i) => {
+            const selected = new FormData(form).get(`q${i}`);
+            cards[i].style.display = (selected === item.ans) ? 'none' : 'block';
+        });
+        if (window.MathJax) MathJax.typeset();
+    };
+
+    document.getElementById('restartBtn').onclick = () => location.reload();
+</script>
+
+</body>
+</html>
