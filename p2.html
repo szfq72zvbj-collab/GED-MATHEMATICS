@@ -79,6 +79,7 @@
             <button class="view-key-btn" id="showAllBtn" style="background:#1a73e8;">Show All Solutions</button>
             <button class="tiny-btn" id="restartBtn">Try Again</button>
         </div>
+        <div id="submitStatus" class="feedback" style="margin-top:12px"></div>
     </div>
 
     <div id="answer-key">
@@ -92,6 +93,7 @@
 </div>
 
 <script>
+    // Questions (kept the same content)
     const questions = [
         { q: "A warehouse has 248 boxes. Each truck can carry 18 boxes. What is the least number of trucks needed to move all the boxes?", options: ["12", "13", "14", "15"], ans: "14", expl: "248 ÷ 18 = 13.77. Since you can't have a partial truck, you need 14 trucks." },
         { q: "Evaluate: $-15 + 8 \\times 3$", options: ["9", "24", "33", "-21"], ans: "9", expl: "Order of operations (PEMDAS): $8 \\times 3 = 24$. Then $-15 + 24 = 9$." },
@@ -109,18 +111,20 @@
         { q: "Evaluate: $(2^3)^2$", options: ["16", "32", "64", "128"], ans: "64", expl: "$2^{3 \\times 2} = 2^6 = 64$." },
         { q: "What is the value of $5^0 + 7$?", options: ["5", "6", "7", "8"], ans: "8", expl: "Any number to the 0 power is 1. $1 + 7 = 8$." },
         { q: "Simplify: $\\sqrt{196}$", options: ["12", "13", "14", "16"], ans: "14", expl: "$14 \\times 14 = 196$." },
-        { q: "Which is equivalent to $2^5 \\times 2^3$?", options: ["2^8", "4^8", "2^15", "4^15"], ans: "2^8", expl: "Add exponents: $2^{5+3} = 2^8$." },
+        { q: "Which is equivalent to $2^5 \\times 2^3$?", options: ["$2^8$", "$4^8$", "$2^{15}$", "$4^{15}$"], ans: "$2^8$", expl: "Add exponents: $2^{5+3} = 2^8$." },
         { q: "Evaluate: $10^3 − 4^2$", options: ["984", "996", "1016", "64"], ans: "984", expl: "$1000 - 16 = 984$." },
         { q: "What is the cube root of 343?", options: ["5", "6", "7", "8"], ans: "7", expl: "$7 \\times 7 \\times 7 = 343$." },
-        { q: "Simplify: $(6^2)(6^1)$", options: ["6^2", "6^3", "12^3", "36^1"], ans: "6^3", expl: "$6^{2+1} = 6^3$." },
-        { q: "Which property is shown: $4(7 + 2) = 4 \\times 7 + 4 \\times 2$?", options: ["Commutative", "Associative", "Distributive", "Identity"], ans: "Distributive Property", expl: "The 4 is distributed across the addition." },
-        { q: "What is the prime factorization of 84?", options: ["2 × 2 × 3 × 7", "2 × 3 × 14", "4 × 21", "2 × 6 × 7"], ans: "2 × 2 × 3 × 7", expl: "$84 = 2 \\times 42 = 2 \\times 2 \\times 21 = 2 \\times 2 \\times 3 \\times 7$." },
+        { q: "Simplify: $(6^2)(6^1)$", options: ["$6^2$", "$6^3$", "$12^3$", "$36^1$"], ans: "$6^3$", expl: "$6^{2+1} = 6^3$." },
+        { q: "Which property is shown: $4(7 + 2) = 4 \\times 7 + 4 \\times 2$?", options: ["Commutative", "Associative", "Distributive", "Identity"], ans: "Distributive", expl: "The 4 is distributed across the addition." },
+        { q: "What is the prime factorization of 84?", options: ["$2 \\times 2 \\times 3 \\times 7$", "$2 \\times 3 \\times 14$", "$4 \\times 21$", "$2 \\times 6 \\times 7$"], ans: "$2 \\times 2 \\times 3 \\times 7$", expl: "$84 = 2 \\times 42 = 2 \\times 2 \\times 21 = 2 \\times 2 \\times 3 \\times 7$." },
         { q: "Simplify: $\\sqrt{81} + 2^3$", options: ["15", "16", "17", "18"], ans: "17", expl: "$9 + 8 = 17$." },
-        { q: "Which expression has the greatest value?", options: ["2^5", "3^3", "4^2", "5^2"], ans: "2^5", expl: "$2^5=32$, $3^3=27$, $4^2=16$, $5^2=25$." },
+        { q: "Which expression has the greatest value?", options: ["$2^5$", "$3^3$", "$4^2$", "$5^2$"], ans: "$2^5$", expl: "$2^5=32$, $3^3=27$, $4^2=16$, $5^2=25$." },
         { q: "Evaluate: $(9 − 4)^2$", options: ["10", "20", "25", "49"], ans: "25", expl: "$5^2 = 25$." }
     ];
 
     const container = document.getElementById('questions-container');
+
+    // Render questions
     questions.forEach((item, i) => {
         const qDiv = document.createElement('div');
         qDiv.className = 'question';
@@ -131,68 +135,132 @@
                     <li><label class="option-label"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label></li>
                 `).join('')}
             </ul>
-            <div class="feedback"></div>
+            <div class="feedback" aria-live="polite"></div>
         `;
         container.appendChild(qDiv);
     });
 
+    // ensure MathJax renders
+    if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{});
+
+    // helper normalize to avoid typographic mismatches
+    const normalize = v => v ? String(v).replace(/^\$|\$$/g, '').replace(/[−–—]/g, '-').trim() : '';
+    function escapeHtml(unsafe) { if (!unsafe && unsafe !== 0) return ''; return String(unsafe).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+    // selection styles
+    container.addEventListener('change', (e) => {
+        if (e.target && e.target.matches('input[type="radio"]')) {
+            const name = e.target.name;
+            container.querySelectorAll(`input[name="${name}"]`).forEach(el => el.closest('label').classList.remove('selected-wrong','selected-correct','selected'));
+            e.target.closest('label').classList.add('selected');
+        }
+    });
+
     const form = document.getElementById('quizForm');
-    form.onsubmit = (e) => {
+    const resultSection = document.getElementById('result-section');
+    const scoreValue = document.getElementById('scoreValue');
+    const keyContent = document.getElementById('key-content');
+
+    form.addEventListener('submit', function(e){
         e.preventDefault();
-        let score = 0;
         const formData = new FormData(form);
+        let score = 0;
+
+        // clear previous
+        document.querySelectorAll('.question').forEach(q => {
+            q.classList.remove('correct','incorrect');
+            const b = q.querySelector('.badge'); if (b) b.remove();
+            const fb = q.querySelector('.feedback'); if (fb) fb.innerHTML = '';
+            q.querySelectorAll('label.option-label').forEach(l => l.classList.remove('correct-label','selected-wrong','selected-correct','selected'));
+        });
 
         questions.forEach((item, i) => {
-            const selected = formData.get(`q${i}`);
+            const key = `q${i}`;
+            const selectedRaw = formData.get(key);
+            const selected = normalize(selectedRaw);
+            const answer = normalize(item.ans);
             const qDiv = container.children[i];
-            const badge = document.createElement('span');
-            badge.className = 'badge';
+            const fb = qDiv.querySelector('.feedback');
 
-            if (selected === item.ans) {
+            const badge = document.createElement('span'); badge.className = 'badge';
+            // mark correct label visually
+            const correctInput = container.querySelector(`input[name="${key}"][value="${item.ans}"]`);
+            if (correctInput) correctInput.closest('label').classList.add('correct-label');
+
+            if (selected && selected === answer) {
                 score++;
                 qDiv.classList.add('correct');
                 badge.classList.add('correct'); badge.textContent = 'Correct';
+                const selInput = container.querySelector(`input[name="${key}"][value="${selectedRaw}"]`);
+                if (selInput) selInput.closest('label').classList.add('selected-correct');
+                fb.innerHTML = '<div style="color:#0b8043;font-weight:600">Nice work — correct.</div>';
             } else {
                 qDiv.classList.add('incorrect');
                 badge.classList.add('incorrect'); badge.textContent = 'Incorrect';
+                const selInput = container.querySelector(`input[name="${key}"][value="${selectedRaw}"]`);
+                if (selInput) selInput.closest('label').classList.add('selected-wrong');
+
+                const your = selectedRaw ? `<div class="your">Your answer: ${escapeHtml(selectedRaw)}</div>` : '<div class="your">Your answer: <em>None selected</em></div>';
+                fb.innerHTML = `${your}<div style="margin-top:6px">Correct answer: <strong>${escapeHtml(item.ans)}</strong></div><div class="explanation" style="margin-top:8px">${item.expl}</div>`;
             }
+
             qDiv.appendChild(badge);
         });
 
+        // fire-and-forget send to Formspree
+        const toSend = new FormData(form);
+        toSend.append('score', `${score}/${questions.length}`);
+        fetch(form.action, { method: form.method, body: toSend, headers: { 'Accept': 'application/json' } }).catch(()=>{});
+
+        // hide form and show results
         form.style.display = 'none';
         document.getElementById('quiz-header').style.display = 'none';
-        document.getElementById('scoreValue').innerText = `${score}/25`;
-        document.getElementById('result-section').style.display = 'block';
-        buildKey();
-    };
+        scoreValue.innerText = `${score}/${questions.length}`;
+        resultSection.style.display = 'block';
 
-    function buildKey() {
-        const keyDiv = document.getElementById('key-content');
-        keyDiv.innerHTML = '';
-        questions.forEach((item, i) => {
+        // build answer key content
+        buildKeyContent();
+
+        // render math in explanations
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{});
+    });
+
+    function buildKeyContent(){
+        keyContent.innerHTML = '';
+        questions.forEach((item,i) => {
             const card = document.createElement('div');
             card.className = 'solution-card';
-            card.innerHTML = `<strong>Q${i+1}:</strong> Correct Answer: <span class="correct-ans">${item.ans}</span><div class="explanation">${item.expl}</div>`;
-            keyDiv.appendChild(card);
+            card.dataset.index = i;
+            card.innerHTML = `<strong>Q${i+1}:</strong> <span class="correct-ans">${escapeHtml(item.ans)}</span><div class="explanation">${item.expl}</div>`;
+            keyContent.appendChild(card);
         });
     }
 
-    document.getElementById('showAllBtn').onclick = () => {
-        document.getElementById('answer-key').style.display = 'block';
-        if (window.MathJax) MathJax.typeset();
-    };
-    
-    document.getElementById('showWrongBtn').onclick = () => {
-        document.getElementById('answer-key').style.display = 'block';
-        const cards = document.querySelectorAll('.solution-card');
-        questions.forEach((item, i) => {
-            const selected = new FormData(form).get(`q${i}`);
-            cards[i].style.display = (selected === item.ans) ? 'none' : 'block';
-        });
-        if (window.MathJax) MathJax.typeset();
-    };
+    document.getElementById('showAllBtn').addEventListener('click', ()=> showKey('all'));
+    document.getElementById('showWrongBtn').addEventListener('click', ()=> showKey('wrong'));
+    document.getElementById('restartBtn').addEventListener('click', ()=> location.reload());
 
-    document.getElementById('restartBtn').onclick = () => location.reload();
+    function showKey(filter='all'){
+        const cards = Array.from(keyContent.querySelectorAll('.solution-card'));
+        // map selected answers
+        const answerMap = {};
+        questions.forEach((_,i)=>{
+            const sel = new FormData(form).get(`q${i}`) || null;
+            answerMap[i] = normalize(sel);
+        });
+
+        cards.forEach(card => {
+            const i = Number(card.dataset.index);
+            const correct = normalize(questions[i].ans);
+            const sel = answerMap[i];
+            if (filter === 'all') card.style.display = 'block';
+            else if (filter === 'wrong') card.style.display = (sel === correct) ? 'none' : 'block';
+        });
+
+        document.getElementById('answer-key').style.display = 'block';
+        document.getElementById('answer-key').scrollIntoView({behavior:'smooth'});
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{});
+    }
 </script>
 
 </body>
