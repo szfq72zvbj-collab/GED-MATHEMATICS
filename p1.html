@@ -2,282 +2,446 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Math Practice Set — Fractions & Decimals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra Quiz & Answer Key</title>
     <script>
       MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <style>
-        body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: linear-gradient(180deg,#eef6ff 0%, #f7f9fb 100%); padding: 16px; color: #202124; margin: 0;min-height: 100vh;}
-        .container { max-width: 100%;width: 100%;margin: 0 auto; background: white; border-radius: 16px; border-top: 8px solid #1a73e8; padding: 24px; box-shadow: 0 6px 24px rgba(18, 40, 80, 0.08);box-sizing: border-box;}
-        h1 { font-size: 28px; margin-bottom: 8px; line-height: 1.3;word-wrap: break-word;}
-        .subtitle { color: #5f6368; margin-bottom: 24px; font-size: 16px;line-height: 1.5;}
-        .question { background: #ffffff; border: 1px solid #e6eefc; border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: all 220ms ease; position: relative;box-sizing: border-box;width: 100%;}
+        body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: linear-gradient(180deg,#eef6ff 0%, #f7f9fb 100%); padding: 28px; color: #202124; }
+        .container { max-width: 900px; margin: auto; background: white; border-radius: 12px; border-top: 8px solid #1a73e8; padding: 32px; box-shadow: 0 6px 24px rgba(18, 40, 80, 0.08); }
+        h1 { font-size: 30px; margin-bottom: 6px; }
+        .subtitle { color: #5f6368; margin-bottom: 20px; }
+        .question { background: #ffffff; border: 1px solid #e6eefc; border-radius: 10px; padding: 20px; margin-bottom: 16px; transition: all 220ms ease; position: relative; }
         .question.correct { border-color: #c7f0d1; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.06); }
         .question.incorrect { border-color: #ffd6d6; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.06); }
-        .question-text { font-size: 17px; margin-bottom: 18px; font-weight: 600; color: #202124;line-height: 1.5;word-wrap: break-word;overflow-wrap: break-word;}
+        .question-text { font-size: 16px; margin-bottom: 14px; font-weight: 600; color: #202124; }
         .options { list-style: none; padding: 0; margin: 0; }
-        .options li { margin-bottom: 14px; display: flex; align-items: center; width: 100%;}
-        input[type="radio"] { margin-right: 12px; cursor: pointer; accent-color: #1a73e8;flex-shrink: 0;}
-        label.option-label { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; cursor: pointer; transition: background 160ms ease, border 160ms ease; width: 100%;box-sizing: border-box;border: 1px solid transparent;background: #f8fafc;}
-        label.option-label:hover { background: #f0f7ff; border-color: #1a73e8;}
-        .submit-btn { background-color: #1a73e8; color: white; border: none; padding: 16px 24px; font-size: 17px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 20px;transition: all 0.2s ease;}
-        .submit-btn:hover {background-color: #0d62d9;transform: translateY(-2px);box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);}
-        #result-section { display: none; text-align: center; padding: 24px 16px; }
-        .score-display { font-size: 48px; font-weight: 700; color: #1a73e8; margin: 16px 0; }
-        #answer-key { display: none; margin-top: 32px; border-top: 2px solid #34a853; padding-top: 24px; }
-        .solution-card { border: 1px solid #e6eefc; border-radius: 12px; padding: 18px; margin-bottom: 16px; text-align: left; background: #fcfeff; box-sizing: border-box;width: 100%;}
-        .correct-ans { color: #0b8043; font-weight: 700; font-size: 16px;}
-        .explanation { background: #f8f9fa; padding: 14px; border-left: 4px solid #34a853; margin-top: 12px; font-size: 15px;line-height: 1.5;border-radius: 0 8px 8px 0;}
-        .view-key-btn { background-color: #34a853; color: white; border: none; padding: 14px 22px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: 600;transition: all 0.2s ease;min-height: 48px;}
-        .view-key-btn:hover {background-color: #2d9c4a;transform: translateY(-2px);box-shadow: 0 4px 12px rgba(52, 168, 83, 0.2);}
-        .controls { display: flex; gap: 16px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
-        .badge { position: absolute; top: 16px; right: 16px; font-size: 14px; padding: 8px 14px; border-radius: 999px; color: white; font-weight: 600;}
-        .badge.correct { background: #16a34a; }
-        .badge.incorrect { background: #ef4444; }
-        .footer { margin-top: 32px; text-align: center; color: #5f6368; font-size: 14px; padding-top: 20px; border-top: 1px solid #edf2f7; }
-        .footer .author { font-weight: 600; color: #202124; }
-        /* Mobile-First Responsive Design */
-        @media (min-width: 768px) {
-            body { padding: 24px; }
-            .container { max-width: 800px; padding: 32px; margin: 0 auto;}
-            h1 { font-size: 32px; }
-            .question { padding: 24px; }
-            .question-text { font-size: 18px; }
-            .options li { margin-bottom: 16px; }
-            label.option-label { padding: 14px 20px; }
-            .submit-btn { padding: 18px 28px; font-size: 18px; }
-            .score-display { font-size: 56px; }
-            .solution-card { padding: 22px; }
-            .explanation { padding: 16px; font-size: 16px; }
-            .view-key-btn { padding: 16px 26px; font-size: 17px; }
-        }
-        @media (max-width: 767px) {
+        .options li { margin-bottom: 10px; display: flex; align-items: center; }
+        input[type="radio"] { margin-right: 12px; cursor: pointer; accent-color: #1a73e8; }
+        label.option-label { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background 160ms ease, border 160ms ease; }
+        label.option-label:hover { background: #f6fbff; }
+        label.correct-label { background: #e9f8ee; border: 1px solid #c7f0d1; }
+        label.selected-wrong { background: #fff4f4; border: 1px solid #ffd6d6; }
+        label.selected-correct { background: #ebf9ee; border: 1px solid #8de08d; }
+        input[type="text"] { width: 100%; border: none; border-bottom: 1px solid #dadce0; padding: 8px 0; font-size: 16px; outline: none; }
+        input[type="text"]:focus { border-bottom: 2px solid #1a73e8; }
+        .submit-btn { background-color: #1a73e8; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
+        #result-section { display: none; text-align: center; padding: 20px 10px; }
+        .score-display { font-size: 46px; font-weight: 700; color: #1a73e8; margin: 12px 0; }
+        #answer-key { display: none; margin-top: 30px; border-top: 2px solid #34a853; padding-top: 20px; }
+        .solution-card { border: 1px solid #e6eefc; border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: left; background: #fcfeff; }
+        .correct-ans { color: #0b8043; font-weight: 700; }
+        .explanation { background: #f8f9fa; padding: 10px; border-left: 4px solid #34a853; margin-top: 10px; font-size: 14px; }
+        .view-key-btn { background-color: #34a853; color: white; border: none; padding: 10px 18px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .controls { display:flex; gap:12px; margin-top:12px; justify-content:center; }
+        .tiny-btn { padding:8px 12px; border-radius:8px; border:1px solid #dfe3ea; background:white; cursor:pointer; }
+        .feedback { margin-top:10px; font-size:14px; }
+        .feedback .your { font-weight:600; }
+        .badge { position:absolute; top:12px; right:12px; font-size:13px; padding:6px 10px; border-radius:999px; color:white; }
+        .badge.correct { background:#16a34a; }
+        .badge.incorrect { background:#ef4444; }
+        /* Footer */
+        .footer { margin-top:20px; text-align:center; color:#5f6368; font-size:13px; padding-top:12px; border-top:1px solid #edf2f7; }
+        .footer .author { font-weight:600; color:#202124; }
+
+        @media (min-width:900px) { .submit-btn { width: auto; padding-left:28px; padding-right:28px; } }
+
+        /* Mobile adjustments: slightly smaller text and tighter spacing */
+        @media (max-width:600px) {
             body { padding: 12px; }
-            .container { padding: 20px; border-radius: 14px;margin: 0 auto;}
-            h1 { font-size: 24px; margin-bottom: 10px;}
-            .subtitle { font-size: 15px; margin-bottom: 20px;}
-            .question { padding: 18px; margin-bottom: 18px;border-radius: 10px;}
-            .question-text { font-size: 16px; margin-bottom: 16px;line-height: 1.5;}
-            .options li { margin-bottom: 12px; }
-            label.option-label { padding: 10px 14px; font-size: 15px;line-height: 1.4;}
-            .submit-btn { padding: 14px 20px; font-size: 16px; border-radius: 8px;}
-            .score-display { font-size: 42px; margin: 14px 0;}
-            .solution-card { padding: 16px; margin-bottom: 14px;}
-            .explanation { padding: 12px; font-size: 14px;margin-top: 10px;}
-            .view-key-btn { padding: 12px 20px; font-size: 15px;min-height: 44px;}
-            .controls { gap: 12px; margin-top: 16px;}
-            .badge { top: 12px; right: 12px; font-size: 13px; padding: 6px 12px; }
-            .footer { margin-top: 24px; font-size: 13px; padding-top: 16px;}
-        }
-        @media (max-width: 480px) {
-            body { padding: 8px; }
-            .container { padding: 16px; border-radius: 12px;}
+            .container { padding: 18px; }
             h1 { font-size: 22px; }
-            .subtitle { font-size: 14px; }
-            .question { padding: 16px; margin-bottom: 16px;}
-            .question-text { font-size: 15px; margin-bottom: 14px;}
-            label.option-label { padding: 8px 12px; font-size: 14px;gap: 8px;}
-            input[type="radio"] { margin-right: 8px; }
-            .submit-btn { padding: 12px 18px; font-size: 15px; }
-            .score-display { font-size: 38px; }
-            .solution-card { padding: 14px; margin-bottom: 12px;}
-            .explanation { padding: 10px; font-size: 13px;}
-            .view-key-btn { padding: 10px 16px; font-size: 14px;min-height: 42px;}
-            .controls { gap: 10px; flex-direction: column;align-items: stretch;}
-            .view-key-btn {width: 100%;}
-            .badge { top: 10px; right: 10px; font-size: 12px; padding: 5px 10px; }
-        }
-        @media (max-width: 360px) {
-            .container { padding: 14px; }
-            h1 { font-size: 20px; }
-            .question { padding: 14px; }
+            .subtitle { font-size: 13px; }
             .question-text { font-size: 14px; }
-            label.option-label { padding: 8px 10px; font-size: 13px;}
-            .submit-btn { padding: 10px 16px; font-size: 14px; }
-            .score-display { font-size: 34px; }
-        }
-        /* MathJax Mobile Optimization */
-        .mjx-math {font-size: 1.1em !important;line-height: 1.2 !important;}
-        @media (max-width: 767px) {.mjx-math {font-size: 1em !important;}}
-        /* Touch Device Improvements */
-        @media (hover: none) and (pointer: coarse) {
-            label.option-label, .submit-btn, .view-key-btn {min-height: 44px;}
-            .submit-btn:hover, .view-key-btn:hover, label.option-label:hover {transform: none;}
-            .submit-btn:active, .view-key-btn:active {transform: scale(0.98);}
-            label.option-label:active {background: #e8f0fe;}
+            .options li, label.option-label { font-size: 14px; }
+            input[type="text"] { font-size: 14px; }
+            .submit-btn { font-size: 15px; padding: 10px 14px; }
+            .score-display { font-size: 36px; }
+            .solution-card { font-size: 14px; padding: 12px; }
+            .explanation { font-size: 13px; }
+            .badge { font-size: 12px; padding:5px 8px; top:10px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="quiz-header">
-            <h1>Comprehensive Math Practice</h1>
-            <p class="subtitle">40 Questions on Fractions and Decimals</p>
-        </div>
 
-        <form id="quizForm" action="https://formspree.io/f/xeenqwrv" method="POST">
-            <div class="question">
-                <div class="question-text">Student Name <span style="color:red">*</span></div>
-                <input type="text" name="Student_Name" required placeholder="Your full name" style="width:100%;border:none;border-bottom:1px solid #dadce0;padding:8px 0;font-size:16px;outline:none;margin-bottom:12px;">
-            </div>
-            <div id="questions-container"></div>
-            <button type="submit" class="submit-btn" id="submitBtn">Submit for Grading</button>
-        </form>
-
-        <div id="result-section">
-            <h2>Practice Results</h2>
-            <div class="score-display" id="scoreValue">0/40</div>
-            <div class="controls">
-                <button type="button" class="view-key-btn" id="showWrongBtn">Review Mistakes</button>
-                <button type="button" class="view-key-btn" id="showAllBtn" style="background:#1a73e8;">Solutions Key</button>
-                <button type="button" class="view-key-btn" style="background:#5f6368;" onclick="location.reload()">Reset Quiz</button>
-            </div>
-            <div id="submitStatus" class="feedback" style="margin-top:12px"></div>
-        </div>
-
-        <div id="answer-key">
-            <h3>Step-by-Step Solutions</h3>
-            <div id="key-content"></div>
-        </div>
-
-        <footer class="footer">
-            <div>© 2026 GED prep. Created by <span class="author">Aung Naing Min</span>.</div>
-        </footer>
+<div class="container">
+    <div id="quiz-header">
+        <h1>Algebra Quiz</h1>
+        <p class="subtitle">Topics: Polynomials, Equations, and Inequalities — select the best answer and submit to check your work.</p>
     </div>
 
-    <script>
-        const questions = [
-            /* FRACTIONS */
-            { q: "A company claims its soap is $99 \\dfrac{44}{100}$ percent pure. What is $\\dfrac{44}{100}$ reduced to its lowest terms?", options: ["A. $\\dfrac{44}{100}$", "B. $\\dfrac{22}{50}$", "C. $\\dfrac{11}{25}$", "D. $\\dfrac{4}{10}$"], ans: "C", expl: "Divide by 4: $44÷4=11$ and $100÷4=25$. Result: $\\dfrac{11}{25}$." },
-            { q: "Laura gave away $\\dfrac{1}{4}$ of flour Monday, $\\dfrac{1}{3}$ of the remainder Tuesday, and $\\dfrac{1}{2}$ of the remainder Wednesday. If she started with 1000 lbs, how much was left?", options: ["A. 0 lbs", "B. 250 lbs", "C. 333 lbs", "D. 500 lbs"], ans: "B", expl: "Calculation: $1000 \\times \\dfrac{3}{4} \\times \\dfrac{2}{3} \\times \\dfrac{1}{2} = 250$ lbs." },
-            { q: "Evaluate: $\\dfrac{1}{3} \\div \\dfrac{5}{3}$", options: ["A. $\\dfrac{5}{9}$", "B. 5", "C. $\\dfrac{9}{5}$", "D. $\\dfrac{1}{5}$"], ans: "D", expl: "Multiply by reciprocal: $\\dfrac{1}{3} \\times \\dfrac{3}{5} = \\dfrac{1}{5}$." },
-            { q: "Toni did $\\dfrac{1}{4}$ of her backlog Monday and the same amount Tuesday. What part is left?", options: ["A. $\\dfrac{1}{8}$", "B. $\\dfrac{1}{4}$", "C. $\\dfrac{1}{2}$", "D. $\\dfrac{2}{3}$"], ans: "C", expl: "Total done: $\\dfrac{1}{4} + \\dfrac{1}{4} = \\dfrac{2}{4} = \\dfrac{1}{2}$. Left: $1 - \\dfrac{1}{2} = \\dfrac{1}{2}$." },
-            { q: "Add $1\\dfrac{5}{8}$ and $4\\dfrac{4}{5}$.", options: ["A. $5\\dfrac{9}{13}$", "B. $6\\dfrac{17}{40}$", "C. $3\\dfrac{7}{40}$", "D. $6\\dfrac{9}{40}$"], ans: "B", expl: "LCD 40: $1\\dfrac{25}{40} + 4\\dfrac{32}{40} = 5\\dfrac{57}{40} = 6\\dfrac{17}{40}$." },
-            { q: "Saul mixes $15\\dfrac{3}{4}$ lbs of beef and $12\\dfrac{3}{8}$ lbs of pork. Total weight?", options: ["A. $3\\dfrac{3}{8}$ lbs", "B. $27\\dfrac{3}{4}$ lbs", "C. $28\\dfrac{1}{8}$ lbs", "D. $28\\dfrac{3}{8}$ lbs"], ans: "C", expl: "$15\\dfrac{6}{8} + 12\\dfrac{3}{8} = 27\\dfrac{9}{8} = 28\\dfrac{1}{8}$." },
-            { q: "Reduce $\\dfrac{144}{216}$ to lowest terms.", options: ["A. $\\dfrac{18}{27}$", "B. $\\dfrac{2}{3}$", "C. $\\dfrac{36}{54}$", "D. $\\dfrac{72}{108}$"], ans: "B", expl: "Divide by GCF (72): $144÷72=2$ and $216÷72=3$. Result: $\\dfrac{2}{3}$." },
-            { q: "Compare: $\\dfrac{3}{54}$ and $\\dfrac{3}{56}$", options: ["A. $>$", "B. $<$", "C. $=$", "D. Invalid"], ans: "A", expl: "With equal numerators, the smaller denominator ($\\dfrac{3}{54}$) represents a larger value." },
-            { q: "Convert $1\\dfrac{1}{4}$ to an improper fraction.", options: ["A. $\\dfrac{2}{4}$", "B. $\\dfrac{5}{4}$", "C. $\\dfrac{4}{1}$", "D. 1.25"], ans: "B", expl: "$(1 \\times 4) + 1 = 5$. Result: $\\dfrac{5}{4}$." },
-            { q: "Reciprocal of $2\\dfrac{3}{7}$?", options: ["A. $\\dfrac{7}{17}$", "B. $\\dfrac{17}{7}$", "C. $\\dfrac{3}{7}$", "D. $\\dfrac{7}{10}$"], ans: "A", expl: "$2\\dfrac{3}{7} = \\dfrac{17}{7}$. The reciprocal is $\\dfrac{7}{17}$." },
-            { q: "Evaluate: $\\left(\\dfrac{2}{5}\\right)^3$", options: ["A. $\\dfrac{6}{5}$", "B. $\\dfrac{8}{5}$", "C. $\\dfrac{6}{15}$", "D. $\\dfrac{8}{125}$"], ans: "D", expl: "Cube numerator and denominator: $2^3 = 8$ and $5^3 = 125$. Result: $\\dfrac{8}{125}$." },
-            { q: "Tomasz multiplied $\\dfrac{3}{4}$ by $1\\dfrac{1}{5}$ and claimed the result was $\\dfrac{3}{4}$. Is he right?", options: ["A. No, should be 9/10", "B. Yes", "C. No, should be 3/5", "D. No, should be 1/2"], ans: "A", expl: "$\\dfrac{3}{4} \\times \\dfrac{6}{5} = \\dfrac{18}{20} = \\dfrac{9}{10}$." },
-            { q: "Simplify $\\dfrac{18}{24} \\div \\dfrac{3}{8}$", options: ["A. 2", "B. 3", "C. 4", "D. 1"], ans: "A", expl: "$\\dfrac{3}{4} \\times \\dfrac{8}{3} = \\dfrac{24}{12} = 2$." },
-            { q: "Which fraction is smallest?", options: ["A. $\\dfrac{11}{15}$", "B. $\\dfrac{5}{8}$", "C. $\\dfrac{7}{10}$", "D. $\\dfrac{13}{18}$"], ans: "B", expl: "$\\dfrac{5}{8} = 0.625$, while others are all $> 0.7$." },
-            { q: "Subtract $3\\dfrac{7}{8}$ from $6\\dfrac{1}{2}$", options: ["A. $2\\dfrac{5}{8}$", "B. $3\\dfrac{5}{8}$", "C. $2\\dfrac{1}{2}$", "D. $3\\dfrac{1}{8}$"], ans: "A", expl: "$6\\dfrac{4}{8} - 3\\dfrac{7}{8} = 5\\dfrac{12}{8} - 3\\dfrac{7}{8} = 2\\dfrac{5}{8}$." },
-            { q: "55 oz tea poured into $7\\dfrac{3}{4}$ oz glasses. How many full?", options: ["A. 6", "B. 7", "C. 8", "D. 9"], ans: "B", expl: "$55 ÷ 7.75 \\approx 7.09$. Only 7 glasses are full." },
-            { q: "Difference between $\\dfrac{14}{100}$ and $\\dfrac{1}{5}$?", options: ["A. $\\dfrac{3}{50}$", "B. $\\dfrac{1}{20}$", "C. $\\dfrac{7}{50}$", "D. $\\dfrac{1}{10}$"], ans: "A", expl: "$\\dfrac{20}{100} - \\dfrac{14}{100} = \\dfrac{6}{100} = \\dfrac{3}{50}$." },
-            { q: "Reciprocal of $2\\dfrac{1}{2}$?", options: ["A. $\\dfrac{2}{5}$", "B. $\\dfrac{5}{2}$", "C. $\\dfrac{1}{2}$", "D. $\\dfrac{2}{1}$"], ans: "A", expl: "$2\\dfrac{1}{2} = \\dfrac{5}{2}$. Reciprocal is $\\dfrac{2}{5}$." },
-            { q: "LCD (lowest common denominator) of $\\dfrac{3}{8}$, $\\dfrac{21}{24}$, $\\dfrac{5}{36}$?", options: ["A. 72", "B. 48", "C. 36", "D. 144"], ans: "A", expl: "72 is the smallest multiple shared by 8, 24, and 36." },
-            { q: "Gabriele has $\\dfrac{1}{3}$ gal, $\\dfrac{1}{5}$ gal, and $\\dfrac{3}{8}$ gal. Total?", options: ["A. $\\dfrac{109}{120}$", "B. $\\dfrac{97}{120}$", "C. $\\dfrac{113}{120}$", "D. $\\dfrac{53}{60}$"], ans: "A", expl: "$\\dfrac{40}{120} + \\dfrac{24}{120} + \\dfrac{45}{120} = \\dfrac{109}{120}$." },
-            { q: "Subtract $45\\dfrac{3}{4}$ from $92\\dfrac{5}{10}$", options: ["A. $46\\dfrac{3}{4}$", "B. $47\\dfrac{1}{4}$", "C. $46\\dfrac{1}{4}$", "D. $47\\dfrac{3}{4}$"], ans: "A", expl: "$92.5 - 45.75 = 46.75 = 46\\dfrac{3}{4}$." },
-            { q: "Emma works 48 hours: 40 hours at \\$9.00 per hour and 8 hours at \\$13.50 per hour. What fraction of her total pay is from overtime (OT)?", options: ["A. $\\dfrac{3}{13}$", "B. $\\dfrac{1}{4}$", "C. $\\dfrac{1}{5}$", "D. $\\dfrac{1}{13}$"], ans: "A", expl: "Total pay: 468. OT pay: 108. $\\dfrac{108}{468} = $\\dfrac{3}{13}$." },
-            { q: "Convert $\\dfrac{124}{11}$ to mixed number.", options: ["A. $11\\dfrac{3}{11}$", "B. $11\\dfrac{1}{11}$", "C. $10\\dfrac{4}{11}$", "D. $11\\dfrac{5}{11}$"], ans: "A", expl: "$124 ÷ 11 = 11$ with remainder 3. Result: $11\\dfrac{3}{11}$." },
-            { q: "Subtract: $\\dfrac{7}{8} - \\dfrac{2}{5}$", options: ["A. $\\dfrac{5}{3}$", "B. $\\dfrac{19}{40}$", "C. $\\dfrac{5}{40}$", "D. $\\dfrac{9}{40}$"], ans: "B", expl: "$\\dfrac{35}{40} - \\dfrac{16}{40} = \\dfrac{19}{40}$." },
-            { q: "Add: $\\dfrac{1}{6} + \\dfrac{2}{9}$", options: ["A. $\\dfrac{3}{15}$", "B. $\\dfrac{7}{18}$", "C. $\\dfrac{5}{18}$", "D. $\\dfrac{1}{3}$"], ans: "B", expl: "$\\dfrac{3}{18} + \\dfrac{4}{18} = \\dfrac{7}{18}$." },
+    <form id="quizForm" action="https://formspree.io/f/xeenqwrv" method="POST">
+        <div class="question">
+            <div class="question-text">Student Name <span style="color:red">*</span></div>
+            <input type="text" name="Student_Name" required placeholder="Your answer">
+        </div>
 
-            /* DECIMALS */
-            { q: "What is $0.375$ expressed as a fraction in simplest form?", options: ["A. $\\dfrac{3}{8}$", "B. $\\dfrac{37}{100}$", "C. $\\dfrac{1}{4}$", "D. $\\dfrac{5}{8}$"], ans: "A", expl: "$0.375 = \\dfrac{375}{1000} = \\dfrac{3}{8}$." },
-            { q: "Evaluate: $12.45 + 0.9 + 112$", options: ["A. 125.35", "B. 125.44", "C. 113.35", "D. 124.35"], ans: "A", expl: "$12.45 + 0.90 + 112.00 = 125.35$." },
-            { q: "Solve: $15.6 \\times 0.04$", options: ["A. 0.624", "B. 6.24", "C. 0.0624", "D. 0.64"], ans: "A", expl: "$15.6 \\times 0.04 = 0.624$." },
-            { q: "Evaluate: $2.4 \\div 0.06$", options: ["A. 4", "B. 40", "C. 0.4", "D. 400"], ans: "B", expl: "$240 ÷ 6 = 40$." },
-            { q: "Which is the largest value?", options: ["A. 0.089", "B. 0.1", "C. 0.09", "D. 0.099"], ans: "B", expl: "$0.100$ is larger than $0.099$." },
-            { q: "Round $14.5678$ to the nearest hundredth.", options: ["A. 14.56", "B. 14.57", "C. 14.6", "D. 15.00"], ans: "B", expl: "The third decimal digit is 7, so round up." },
-            { q: "Convert $\\dfrac{7}{20}$ to a decimal.", options: ["A. 0.35", "B. 0.7", "C. 0.035", "D. 0.4"], ans: "A", expl: "$\\dfrac{7}{20} = \\dfrac{35}{100} = 0.35$." },
-            { q: "Calculate: $10 - 4.321$", options: ["A. 5.679", "B. 6.679", "C. 5.68", "D. 6.779"], ans: "A", expl: "$10.000 - 4.321 = 5.679$." },
-            { q: "Express $4.5$ as a mixed number.", options: ["A. $4\\dfrac{1}{2}$", "B. $4\\dfrac{1}{5}$", "C. $4\\dfrac{5}{100}$", "D. $\\dfrac{45}{100}$"], ans: "A", expl: "$4.5 = 4\\dfrac{5}{10} = 4\\dfrac{1}{2}$." },
-            { q: "Multiply: $0.12 \\times 0.12$", options: ["A. 0.0144", "B. 0.144", "C. 1.44", "D. 0.00144"], ans: "A", expl: "$12 \\times 12 = 144$ with 4 decimal places." },
-            { q: "Find the average of $2.5, 3.7,$ and $4.6$.", options: ["A. 3.6", "B. 10.8", "C. 3.4", "D. 3.8"], ans: "A", expl: "$(2.5+3.7+4.6)÷3 = 3.6$." },
-            { q: "Average time per km if 5 km takes 22.5 min?", options: ["A. 4.5 min", "B. 4.25 min", "C. 4.75 min", "D. 5 min"], ans: "A", expl: "$22.5 ÷ 5 = 4.5$." },
-            { q: "What is 15% of 80?", options: ["A. 12", "B. 15", "C. 8", "D. 10"], ans: "A", expl: "$0.15 \\times 80 = 12$." },
-            { q: "Solve: $0.8 + 0.08 + 0.008$", options: ["A. 0.888", "B. 0.808", "C. 0.9", "D. 0.88"], ans: "A", expl: "Sum: $0.888$." },
-            { q: "Price of $3.5$ lbs of meat at $4.20 per lb?", options: ["A. $14.70", "B. $14.00", "C. $15.20", "D. $14.50"], ans: "A", expl: "$3.5 \\times 4.20 = 14.70$." }
-        ];
+        <!-- Q1 -->
+        <div class="question" data-q="Q1_Answer">
+            <input type="hidden" name="Q1_Text" value="Simplify: (4x^2 - 3x + 2) + (2x^2 + 5x - 8)">
+            <div class="question-text">Q1. Simplify: $(4x^2 - 3x + 2) + (2x^2 + 5x - 8)$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q1_Answer" value="2x^2+2x-6"> $2x^2 + 2x - 6$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q1_Answer" value="6x^2+2x-6" required> $6x^2 + 2x - 6$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q1_Answer" value="6x^2+8x-6"> $6x^2 + 8x - 6$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
 
-        const container = document.getElementById('questions-container');
-        questions.forEach((item, i) => {
-            const qDiv = document.createElement('div');
-            qDiv.className = 'question';
-            qDiv.innerHTML = `
-                <div class="question-text">Q${i+1}. ${item.q}</div>
-                <ul class="options">
-                    ${item.options.map(opt => `
-                        <li><label class="option-label"><input type="radio" name="q${i}" value="${opt[0]}"> ${opt}</label></li>
-                    `).join('')}
-                </ul>
-            `;
-            container.appendChild(qDiv);
+        <!-- Q2 -->
+        <div class="question" data-q="Q2_Answer">
+            <input type="hidden" name="Q2_Text" value="Expand: (x + 5)(x - 3)">
+            <div class="question-text">Q2. Expand the expression: $(x + 5)(x - 3)$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q2_Answer" value="x^2+8x+15"> $x^2 + 8x + 15$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q2_Answer" value="x^2-2x-15"> $x^2 - 2x - 15$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q2_Answer" value="x^2+2x-15" required> $x^2 + 2x - 15$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question" data-q="Q3_Answer">
+            <input type="hidden" name="Q3_Text" value="Solve for x: 5x - 10 = 2x + 8">
+            <div class="question-text">Q3. Solve for $x$: $5x - 10 = 2x + 8$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q3_Answer" value="x=6" required> $x = 6$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q3_Answer" value="x=2"> $x = 2$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q3_Answer" value="x=-6"> $x = -6$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question" data-q="Q4_Answer">
+            <input type="hidden" name="Q4_Text" value="Simplify: (x^2 - 16)/(x - 4)">
+            <div class="question-text">Q4. Simplify the rational expression: $\dfrac{x^2 - 16}{x - 4}$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q4_Answer" value="x-4"> $x - 4$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q4_Answer" value="x+4" required> $x + 4$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q4_Answer" value="x+16"> $x + 16$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="question" data-q="Q5_Answer">
+            <input type="hidden" name="Q5_Text" value="Solve inequality: 3(x - 2) <= 9">
+            <div class="question-text">Q5. Solve the inequality: $3(x - 2) \le 9$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q5_Answer" value="x<=3"> $x \le 3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q5_Answer" value="x>=5"> $x \ge 5$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q5_Answer" value="x<=5" required> $x \le 5$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="question" data-q="Q6_Answer">
+            <input type="hidden" name="Q6_Text" value="Factor: 3x^2 - 12x">
+            <div class="question-text">Q6. Factor completely: $3x^2 - 12x$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q6_Answer" value="3x(x-4)" required> $3x(x - 4)$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q6_Answer" value="3(x^2-4)"> $3(x^2 - 4)$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q6_Answer" value="x(3x-12)"> $x(3x - 12)$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question" data-q="Q7_Answer">
+            <input type="hidden" name="Q7_Text" value="Simplify: 4/x + 3/x">
+            <div class="question-text">Q7. Simplify: $\dfrac{4}{x} + \dfrac{3}{x}$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q7_Answer" value="12/x"> $\dfrac{12}{x}$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q7_Answer" value="7/x" required> $\dfrac{7}{x}$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q7_Answer" value="7/2x"> $\dfrac{7}{2x}$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question" data-q="Q8_Answer">
+            <input type="hidden" name="Q8_Text" value="Solve for y: 2(y + 4) = 3y - 1">
+            <div class="question-text">Q8. Solve for $y$: $2(y + 4) = 3y - 1$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q8_Answer" value="y=7"> $y = 7$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q8_Answer" value="y=-9"> $y = -9$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q8_Answer" value="y=9" required> $y = 9$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question" data-q="Q9_Answer">
+            <input type="hidden" name="Q9_Text" value="Solution to x^2 - 9 = 0">
+            <div class="question-text">Q9. Which of the following is a solution to $x^2 - 9 = 0$?</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q9_Answer" value="x=3" required> $x = 3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q9_Answer" value="x=0"> $x = 0$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q9_Answer" value="x=9"> $x = 9$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question" data-q="Q10_Answer">
+            <input type="hidden" name="Q10_Text" value="Solve inequality: -2x + 4 < 10">
+            <div class="question-text">Q10. Solve the inequality: $-2x + 4 < 10$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q10_Answer" value="x<-3"> $x < -3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q10_Answer" value="x>-3" required> $x > -3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q10_Answer" value="x>-7"> $x > -7$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question" data-q="Q11_Answer">
+            <input type="hidden" name="Q11_Text" value="Multiply: (2x^3)(5x^4)">
+            <div class="question-text">Q11. Multiply: $(2x^3)(5x^4)$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q11_Answer" value="10x^12"> $10x^{12}$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q11_Answer" value="7x^7"> $7x^7$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q11_Answer" value="10x^7" required> $10x^7$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question" data-q="Q12_Answer">
+            <input type="hidden" name="Q12_Text" value="Simplify: 15a^5 / 3a^2">
+            <div class="question-text">Q12. Simplify: $\dfrac{15a^5}{3a^2}$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q12_Answer" value="5a^3" required> $5a^3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q12_Answer" value="12a^3"> $12a^3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q12_Answer" value="5a^7"> $5a^7$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question" data-q="Q13_Answer">
+            <input type="hidden" name="Q13_Text" value="Solve system: x + y = 5, x - y = 1">
+            <div class="question-text">Q13. Solve the system for $x$: $x + y = 5$ and $x - y = 1$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q13_Answer" value="x=2"> $x = 2$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q13_Answer" value="x=3" required> $x = 3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q13_Answer" value="x=4"> $x = 4$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question" data-q="Q14_Answer">
+            <input type="hidden" name="Q14_Text" value="Value of 2x^2 - 5x when x = 3">
+            <div class="question-text">Q14. Find the value of $2x^2 - 5x$ when $x = 3$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q14_Answer" value="9"> $9$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q14_Answer" value="-3"> $-3$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q14_Answer" value="3" required> $3$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="question" data-q="Q15_Answer">
+            <input type="hidden" name="Q15_Text" value="Simplify: (x + 2)^2">
+            <div class="question-text">Q15. Simplify: $(x + 2)^2$</div>
+            <ul class="options">
+                <li><label class="option-label"><input type="radio" name="Q15_Answer" value="x^2+4"> $x^2 + 4$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q15_Answer" value="x^2+4x+4" required> $x^2 + 4x + 4$</label></li>
+                <li><label class="option-label"><input type="radio" name="Q15_Answer" value="x^2+2x+4"> $x^2 + 2x + 4$</label></li>
+            </ul>
+            <div class="feedback" aria-live="polite"></div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Submit Quiz</button>
+    </form>
+
+    <div id="result-section">
+        <h2>Submission Received!</h2>
+        <p>Your Final Score:</p>
+        <div class="score-display" id="scoreValue">0/15</div>
+        <div class="controls">
+            <button class="view-key-btn" id="showWrongBtn">Review Incorrect Only</button>
+            <button class="view-key-btn" id="showAllBtn" style="background:#1a73e8;">Show All Explanations</button>
+            <button class="tiny-btn" id="restartBtn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <div id="answer-key">
+        <h3>Step-by-Step Solutions</h3>
+        <div id="key-content"></div>
+        <button class="submit-btn" onclick="location.reload()" style="margin-top:20px; background-color: #5f6368;">Restart Quiz</button>
+    </div>
+
+    <!-- Footer identifying the creator -->
+    <footer class="footer" aria-label="copyright and author">
+        <div>© 2026 GED prep. Form created by <span class="author">Aung Naing Min</span>.</div>
+        <div style="font-size:12px; margin-top:6px; color:#80868b;">For educational use only.</div>
+    </footer>
+</div>
+
+<script>
+    const correctAnswers = {
+        Q1_Answer: "6x^2+2x-6", Q2_Answer: "x^2+2x-15", Q3_Answer: "x=6", Q4_Answer: "x+4", Q5_Answer: "x<=5",
+        Q6_Answer: "3x(x-4)", Q7_Answer: "7/x", Q8_Answer: "y=9", Q9_Answer: "x=3", Q10_Answer: "x>-3",
+        Q11_Answer: "10x^7", Q12_Answer: "5a^3", Q13_Answer: "x=3", Q14_Answer: "3", Q15_Answer: "x^2+4x+4"
+    };
+
+    const solutionLogic = {
+        Q1_Answer: "Combine like terms: $(4+2)x^2 + (-3+5)x + (2-8) = 6x^2+2x-6$.",
+        Q2_Answer: "Use FOIL: $x^2 - 3x + 5x - 15 = x^2+2x-15$.",
+        Q3_Answer: "Subtract $2x$ and add $10$: $3x = 18 \\\rightarrow x = 6$.",
+        Q4_Answer: "Factor numerator: $\\frac{(x-4)(x+4)}{x-4} = x+4$.",
+        Q5_Answer: "Divide by $3$: $x-2 \\\le 3 \\\rightarrow x \\\le 5$.",
+        Q6_Answer: "Factor out the GCF $3x$: $3x(x-4)$.",
+        Q7_Answer: "Common denominator: $\\frac{4+3}{x} = \\frac{7}{x}$.",
+        Q8_Answer: "Distribute: $2y+8 = 3y-1 \\\rightarrow 8+1 = 3y-2y \\\rightarrow y=9$.",
+        Q9_Answer: "$x^2=9 \\\rightarrow x=3$ or $x=-3$.",
+        Q10_Answer: "$-2x < 6$. Divide by $-2$ and **flip the inequality sign**: $x > -3$.",
+        Q11_Answer: "Multiply constants and add exponents: $2 \\cdot 5 \\cdot x^{3+4} = 10x^7$.",
+        Q12_Answer: "Divide constants and subtract exponents: $\\frac{15}{3} \\cdot a^{5-2} = 5a^3$.",
+        Q13_Answer: "Add equations: $2x = 6 \\\rightarrow x = 3$.",
+        Q14_Answer: "$2(3)^2 - 5(3) = 18 - 15 = 3$.",
+        Q15_Answer: "Perfect square trinomial: $x^2 + 2(x)(2) + 2^2 = x^2+4x+4$."
+    };
+
+    const form = document.getElementById('quizForm');
+    const resultSection = document.getElementById('result-section');
+    const scoreValue = document.getElementById('scoreValue');
+    const answerKeyEl = document.getElementById('answer-key');
+    const keyContent = document.getElementById('key-content');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        let score = 0;
+        const formData = new FormData(this);
+
+        // Clear previous badges/feedback
+        document.querySelectorAll('.question').forEach(q => {
+            q.classList.remove('correct','incorrect');
+            const badge = q.querySelector('.badge'); if(badge) badge.remove();
+            const fb = q.querySelector('.feedback'); if(fb) fb.innerHTML = '';
+            q.querySelectorAll('label.option-label').forEach(l => l.classList.remove('correct-label','selected-wrong','selected-correct'));
         });
 
-        const form = document.getElementById('quizForm');
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            let score = 0;
-            const formData = new FormData(form);
+        for (let key in correctAnswers) {
+            const inputs = document.getElementsByName(key);
+            if (!inputs || inputs.length === 0) continue;
+            const questionDiv = inputs[0].closest('.question');
+            const correct = correctAnswers[key];
+            const selected = formData.get(key);
 
-            questions.forEach((item, i) => {
-                const selected = formData.get(`q${i}`);
-                const qDiv = container.children[i];
-                qDiv.querySelectorAll('.badge').forEach(b => b.remove());
-                const badge = document.createElement('span');
-                badge.className = 'badge';
+            // create badge
+            const badge = document.createElement('span'); badge.className = 'badge';
 
-                if (selected === item.ans) {
-                    score++;
-                    qDiv.classList.add('correct'); qDiv.classList.remove('incorrect');
-                    badge.classList.add('correct'); badge.textContent = 'Correct';
-                } else {
-                    qDiv.classList.add('incorrect'); qDiv.classList.remove('correct');
-                    badge.classList.add('incorrect'); badge.textContent = 'Incorrect';
+            const fb = questionDiv.querySelector('.feedback');
+
+            if (selected === correct) {
+                score++;
+                questionDiv.classList.add('correct');
+                badge.classList.add('correct'); badge.textContent = 'Correct';
+                // highlight chosen label
+                for (const inp of inputs) {
+                    const lab = inp.parentElement;
+                    if (inp.checked) lab.classList.add('selected-correct');
+                    if (inp.value === correct) lab.classList.add('correct-label');
                 }
-                qDiv.appendChild(badge);
-            });
+                fb.innerHTML = '<div style="color:#0b8043;font-weight:600">Nice work — correct.</div>';
+            } else {
+                questionDiv.classList.add('incorrect');
+                badge.classList.add('incorrect'); badge.textContent = 'Incorrect';
 
-            document.getElementById('scoreValue').innerText = `${score}/40`;
-            document.getElementById('result-section').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+                // mark student's selection and correct label
+                for (const inp of inputs) {
+                    const lab = inp.parentElement;
+                    if (inp.checked) lab.classList.add('selected-wrong');
+                    if (inp.value === correct) lab.classList.add('correct-label');
+                }
 
-            // send results to Formspree
-            try {
-                const toSend = new FormData(form);
-                toSend.append('score', `${score}/${questions.length}`);
-                fetch(form.action, { method: form.method || 'POST', body: toSend, headers: { 'Accept': 'application/json' } })
-                    .then(res => {
-                        const status = document.getElementById('submitStatus');
-                        if (res.ok) status.textContent = 'Answers submitted to Formspree.';
-                        else status.textContent = 'Submission failed (server response).';
-                    }).catch(()=>{
-                        const status = document.getElementById('submitStatus');
-                        status.textContent = 'Unable to submit answers (network error).';
-                    });
-            } catch (err) {
-                const status = document.getElementById('submitStatus');
-                status.textContent = 'Submission error.';
+                // Provide helpful feedback with explanation
+                const your = selected ? `<div class="your">Your answer: ${escapeHtml(selected)}</div>` : '<div class="your">Your answer: <em>None selected</em></div>';
+                fb.innerHTML = `${your}<div style="margin-top:6px">Correct answer: <strong>${escapeHtml(correct)}</strong></div><div class="explanation">${solutionLogic[key]}</div>`;
             }
-        };
 
-        function buildKey() {
-            const keyDiv = document.getElementById('key-content');
-            keyDiv.innerHTML = '';
-            questions.forEach((item, i) => {
-                const card = document.createElement('div');
-                card.className = 'solution-card';
-                card.innerHTML = `<strong>Q${i+1}:</strong> Correct Answer: <span class="correct-ans">${item.ans}</span><div class="explanation">${item.expl}</div>`;
-                keyDiv.appendChild(card);
-            });
-            document.getElementById('answer-key').style.display = 'block';
-            if (window.MathJax) MathJax.typeset();
+            // append badge once per question
+            questionDiv.appendChild(badge);
         }
 
-        document.getElementById('showAllBtn').onclick = buildKey;
-        document.getElementById('showWrongBtn').onclick = () => {
-            buildKey();
-            const cards = document.querySelectorAll('.solution-card');
-            questions.forEach((item, i) => {
-                const selected = new FormData(form).get(`q${i}`);
-                cards[i].style.display = (selected === item.ans) ? 'none' : 'block';
-            });
-        };
-    </script>
+        // Send to Formspree (fire-and-forget)
+        fetch(this.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } }).catch(()=>{});
+
+        // Toggle Views and show result
+        document.getElementById('quizForm').style.display = 'none';
+        document.getElementById('quiz-header').style.display = 'none';
+        scoreValue.innerText = `${score}/15`;
+        resultSection.style.display = 'block';
+
+        // prepare key content for buttons
+        buildKeyContent();
+
+        // ensure MathJax renders any math in explanations
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{});
+    });
+
+    function buildKeyContent() {
+        keyContent.innerHTML = '';
+        let count = 1;
+        for (let key in correctAnswers) {
+            const correct = correctAnswers[key];
+            const card = document.createElement('div'); card.className = 'solution-card';
+            card.dataset.key = key;
+            card.innerHTML = `<strong>Question ${count}:</strong> <span class="correct-ans">${escapeHtml(correct)}</span><div class="explanation">${solutionLogic[key]}</div>`;
+            keyContent.appendChild(card);
+            count++;
+        }
+    }
+
+    // Show only wrong explanations or all
+    document.getElementById('showWrongBtn').addEventListener('click', function(){ showKey('wrong'); });
+    document.getElementById('showAllBtn').addEventListener('click', function(){ showKey('all'); });
+    document.getElementById('restartBtn').addEventListener('click', function(){ location.reload(); });
+
+    function showKey(filter = 'all') {
+        // show/hide cards based on answers
+        const cards = Array.from(keyContent.querySelectorAll('.solution-card'));
+        // Map answers
+        const answerMap = {};
+        for (let key in correctAnswers) {
+            const inputs = document.getElementsByName(key);
+            if (!inputs || inputs.length === 0) continue;
+            const selected = Array.from(inputs).find(i => i.checked)?.value || null;
+            answerMap[key] = selected;
+        }
+
+        cards.forEach(card => {
+            const key = card.dataset.key;
+            const correct = correctAnswers[key];
+            const selected = answerMap[key];
+            if (filter === 'all') {
+                card.style.display = 'block';
+            } else if (filter === 'wrong') {
+                if (selected !== correct) card.style.display = 'block'; else card.style.display = 'none';
+            }
+        });
+
+        answerKeyEl.style.display = 'block';
+        // scroll to key
+        answerKeyEl.scrollIntoView({ behavior: 'smooth' });
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch(()=>{});
+    }
+
+    // small helper to escape HTML in inserted strings
+    function escapeHtml(unsafe) {
+        if (!unsafe && unsafe !== 0) return '';
+        return String(unsafe).replace(/[&<>"']/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;', '"':'&quot;', "'":"&#039;"})[m]; });
+    }
+</script>
+
 </body>
 </html>
