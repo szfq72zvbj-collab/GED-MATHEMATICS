@@ -50,7 +50,6 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-s
 <a class="btn" href="#chapters">Explore chapters</a>
 </div>
 <div id="welcome" class="banner" style="display:none"></div>
-<div id="signupNotice" class="banner" style="display:none"></div>
 </div>
 <div class="hero-card hero-side">
 <div style="font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.75">Math notation preview</div>
@@ -70,7 +69,6 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-s
 
 <script>
 const $=id=>document.getElementById(id);
-const signupSuccess=new URLSearchParams(location.search).get("signup")==="success";
 let chapters=[];
 function theme(){document.documentElement.classList.toggle("dark",localStorage.getItem("g12_theme")==="dark");$("theme").textContent=document.documentElement.classList.contains("dark")?"☀ Light":"☾ Theme"}
 $("theme").onclick=()=>{localStorage.setItem("g12_theme",document.documentElement.classList.contains("dark")?"light":"dark");theme()};theme();
@@ -83,32 +81,16 @@ function render(){
  <div class="meta"><span class="count" id="qc-${c.id}">Questions: …</span><span class="start">Open →</span></div></a>`).join(""):'<div class="empty">No matching chapter.</div>';
 }
 async function loadCounts(){
- const r=await gedSupabase
-   .from("grade12_questions")
-   .select("id,chapter_id")
-   .eq("published",true);
- if(r.error){
-   $("qtotal").textContent="—";
-   return;
- }
- const counts={};
- for(const q of (r.data||[])) counts[q.chapter_id]=(counts[q.chapter_id]||0)+1;
  for(const c of chapters){
-   const el=$("qc-"+c.id);
-   if(el)el.textContent="Questions: "+(counts[c.id]||0);
+  const r=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id).eq("published",true);
+  const el=$("qc-"+c.id);if(el)el.textContent="Questions: "+(r.count??0);
  }
- $("qtotal").textContent=(r.data||[]).length;
+ const all=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("published",true);$("qtotal").textContent=all.count??0;
 }
 async function init(){
  const cr=await gedSupabase.from("grade12_chapters").select("*").order("sort_order");
  if(cr.error){$("grid").innerHTML='<div class="empty">Unable to load chapters right now.</div>';return}
  chapters=cr.data||[];render();
- if(signupSuccess){
-  $("signupNotice").style.display="block";
-  $("signupNotice").innerHTML="<strong>Account created.</strong> Please check your email and confirm your address, then sign in to start learning. Your account is ready on the platform.";
-  $("heroStart").href="login.html";
-  $("heroStart").textContent="Sign in to start";
-}
  if(!GED_AUTH_READY){return}
  const {data}=await gedSupabase.auth.getSession();const user=data.session?.user;
  if(!user){loadCounts();return}
