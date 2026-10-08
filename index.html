@@ -430,7 +430,7 @@
     
     /* Mobile Touch Improvements */
     @media (hover: none) and (pointer: coarse) {
-      .btn, .demo-btn, .password-toggle, .remember input[type="checkbox"] {
+      .btn, .password-toggle {
         min-height: 44px;
       }
       
@@ -444,11 +444,11 @@
       }
       
       /* Remove hover effects on touch devices */
-      .btn:hover, .demo-btn:hover, .form-control:hover:not(:focus) {
+      .btn:hover, .form-control:hover:not(:focus) {
         transform: none;
       }
       
-      .btn:active, .demo-btn:active {
+      .btn:active {
         transform: scale(0.98);
       }
     }
@@ -476,66 +476,6 @@
     .divider span {
       padding: 0 20px;
       opacity: 0.7;
-    }
-
-    .demo-section {
-      margin-top: 28px;
-      padding: 24px;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
-      border-radius: var(--radius-sm);
-      border: 2px solid rgba(16, 185, 129, 0.2);
-      animation: fadeInUp 0.6s ease-out 0.8s both;
-      backdrop-filter: blur(10px);
-    }
-
-    .demo-section h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .demo-section h3::before {
-      content: '✨';
-      font-size: 18px;
-    }
-
-    .demo-credentials {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.6;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    .demo-btn {
-      background: linear-gradient(135deg, var(--accent) 0%, #0da271 100%);
-      color: white;
-      border: none;
-      padding: 14px 24px;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 15px;
-      width: 100%;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: inherit;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-    }
-
-    .demo-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-    }
-
-    .demo-btn:active {
-      transform: translateY(-1px);
     }
 
     .signup-link {
@@ -745,20 +685,6 @@
         margin: 32px 0;
       }
       
-      .demo-section {
-        padding: 20px;
-        margin-top: 24px;
-      }
-      
-      .demo-credentials {
-        padding: 14px;
-        font-size: 13px;
-      }
-      
-      .demo-btn {
-        padding: 14px 20px;
-      }
-      
       .signup-link {
         margin-top: 28px;
         font-size: 14px;
@@ -805,19 +731,6 @@
         font-size: 15px;
       }
       
-      .demo-section {
-        padding: 18px;
-      }
-      
-      .demo-credentials {
-        padding: 12px;
-        font-size: 12px;
-      }
-      
-      .demo-btn {
-        padding: 12px 18px;
-        font-size: 14px;
-      }
     }
     
     @media (max-width: 360px) {
@@ -895,7 +808,7 @@
         <div class="logo-icon">GED</div>
       </div>
       <h1>Welcome to GED Prep</h1>
-      <p>Sign in to your account to access course materials, track progress, and continue learning.</p>
+      <p>Sign in to your real GED Prep account to access lessons, quizzes, and your learning progress.</p>
     </header>
 
     <div id="message" class="message"></div>
@@ -903,7 +816,7 @@
     <form id="loginForm">
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="text" id="email" class="form-control" placeholder="you@example.com or username" autocomplete="username" required>
+        <input type="text" id="email" class="form-control" placeholder="you@example.com" autocomplete="email" required>
         <div id="emailError" class="error-message">Please enter a valid email address.</div>
       </div>
 
@@ -915,11 +828,7 @@
       </div>
 
       <div class="remember-forgot">
-        <div class="remember">
-          <input type="checkbox" id="remember">
-          <label for="remember">Keep me signed in</label>
-        </div>
-        <a href="#" class="forgot-link">Forgot password?</a>
+        <a href="reset.html" class="forgot-link">Forgot password?</a>
       </div>
 
       <button type="submit" class="btn" id="submitBtn">
@@ -927,16 +836,6 @@
         <div class="loading" id="loading" style="display: none;"></div>
       </button>
 
-      <div class="divider">
-        <span>Quick Access</span>
-      </div>
-
-      <div class="demo-section">
-        <h3>Demo Credentials</h3>
-        <div class="demo-credentials">
-          <strong>Email:</strong> shay@ged.com<br>
-          <strong>Password:</strong> 2026ged
-        </div>
         <button class="demo-btn" id="demoBtn">Try Demo Login</button>
       </div>
 
@@ -954,9 +853,7 @@
       passwordInput=document.getElementById('password'),passwordToggle=document.getElementById('passwordToggle'),
       emailError=document.getElementById('emailError'),passwordError=document.getElementById('passwordError'),
       messageDiv=document.getElementById('message'),submitBtn=document.getElementById('submitBtn'),
-      btnText=document.getElementById('btnText'),loading=document.getElementById('loading'),
-      signupLink=document.getElementById('signupLink'),demoBtn=document.getElementById('demoBtn'),
-      remember=document.getElementById('remember');
+      btnText=document.getElementById('btnText'),loading=document.getElementById('loading');
 
     function showError(el,text){el.textContent=text;el.classList.add('show');el.closest('.form-group')?.querySelector('.form-control')?.classList.add('error')}
     function hideError(el){el.classList.remove('show');el.closest('.form-group')?.querySelector('.form-control')?.classList.remove('error')}
@@ -989,19 +886,9 @@
       const {error}=await gedSupabase.auth.signInWithPassword({email,password});
       if(error){setLoading(false);showMessage('error',error.message);return}
       localStorage.setItem('ged_user_email',email);
-      if(remember.checked)localStorage.setItem('ged_persist_session','true');else localStorage.removeItem('ged_persist_session');
       window.location.replace('dashboard.html');
     });
 
-    demoBtn.addEventListener('click',e=>{
-      e.preventDefault();
-      emailInput.value='shay@ged.com';passwordInput.value='2026ged';
-      showMessage('info','Demo fields filled. The demo account must exist in Supabase Auth.');
-    });
-    signupLink.addEventListener('click',e=>{e.preventDefault();window.location.href='signup.html'});
-    document.querySelector('.forgot-link').addEventListener('click',e=>{
-      e.preventDefault();window.location.href='reset.html';
-    });
     emailInput.addEventListener('input',()=>hideError(emailError));
     passwordInput.addEventListener('input',()=>hideError(passwordError));
   </script>
