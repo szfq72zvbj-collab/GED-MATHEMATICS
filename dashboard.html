@@ -8,9 +8,21 @@
     // Dashboard initialization
     window.addEventListener('DOMContentLoaded', function() {
       // Check if we have a session flag
-      const hasSession = sessionStorage.getItem('ged_logged_in');
-      const userEmail = sessionStorage.getItem('ged_user_email');
-      
+      const hasSession =
+        sessionStorage.getItem('ged_logged_in') === 'true' ||
+        localStorage.getItem('ged_persist_session') === 'true';
+
+      if (localStorage.getItem('ged_persist_session') === 'true') {
+        sessionStorage.setItem('ged_logged_in', 'true');
+        const savedEmail = localStorage.getItem('ged_user_email');
+        if (savedEmail) sessionStorage.setItem('ged_user_email', savedEmail);
+      }
+
+      const userEmail =
+        sessionStorage.getItem('ged_user_email') ||
+        localStorage.getItem('ged_user_email') ||
+        'student@gedprep.com';
+
       // If no session, redirect to login
       if (!hasSession) {
         window.location.href = 'index.html';
@@ -31,24 +43,27 @@
         
         // Update last login time
         const now = new Date();
-        const options = { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        };
-        document.getElementById('lastLogin').textContent = now.toLocaleDateString('en-US', options);
+        const lastLogin = localStorage.getItem('ged_last_login');
+        if (lastLogin) {
+          document.getElementById('lastLogin').textContent =
+            new Date(lastLogin).toLocaleString('en-US', {
+              weekday: 'short', month: 'short', day: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            });
+        }
       }
       
-      // Add progress animation
-      setTimeout(() => {
-        const progressFill = document.querySelector('.progress-fill');
-        if (progressFill) {
-          progressFill.style.width = '30%';
-        }
-      }, 300);
+      // Calculate progress from completed practice sets.
+      const quizKeys = ['ged_quiz_p1', 'ged_quiz_p2', 'ged_quiz_p3', 'ged_quiz_p4'];
+      const completed = quizKeys.filter(key => localStorage.getItem(key)).length;
+      const progress = Math.round((completed / quizKeys.length) * 100);
+      const progressFill = document.querySelector('.progress-fill');
+      const progressText = document.getElementById('courseProgress');
+      const nextText = document.getElementById('nextChapter');
+      if (progressFill) progressFill.style.width = progress + '%';
+      if (progressText) progressText.textContent = progress + '%';
+      if (nextText) nextText.textContent =
+        completed < quizKeys.length ? 'Practice Set ' + (completed + 1) : 'All practice sets complete';
     });
     
     // Logout function with confirmation
@@ -56,6 +71,7 @@
       if (confirm('Are you sure you want to logout?')) {
         sessionStorage.removeItem('ged_logged_in');
         sessionStorage.removeItem('ged_user_email');
+        localStorage.removeItem('ged_persist_session');
         window.location.href = 'index.html';
       }
     }
@@ -372,8 +388,8 @@
         <div class="progress-fill"></div>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--text-light);">
-        <span>Course Progress: <strong>30%</strong></span>
-        <span>Next: <strong>Chapter 4</strong></span>
+        <span>Course Progress: <strong id="courseProgress">0%</strong></span>
+        <span>Next: <strong id="nextChapter">Practice Set 1</strong></span>
       </div>
     </header>
 
