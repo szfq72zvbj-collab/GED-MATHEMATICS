@@ -8,7 +8,19 @@
 <style>
 *{box-sizing:border-box}body{margin:0;padding:20px;background:#f4f7fb;font-family:Inter,Arial,sans-serif;color:#202124}.wrap{max-width:900px;margin:auto;background:#fff;border-radius:16px;padding:28px;box-shadow:0 8px 30px #00000012;border-top:7px solid #2563eb}h1{margin:0 0 6px}.sub{color:#64748b;margin:0 0 24px}.student{margin-bottom:20px}.student input{width:100%;padding:12px;border:1px solid #dbe3ef;border-radius:8px;font-size:16px}.q{border:1px solid #e5eaf2;border-radius:12px;padding:18px;margin:14px 0;position:relative}.q.correct{border-color:#86efac;background:#f7fff9}.q.wrong{border-color:#fca5a5;background:#fffafa}.qt{font-weight:700;margin-bottom:12px}.opts{display:grid;gap:8px}.opt{padding:11px 13px;border-radius:8px;background:#f8fafc;cursor:pointer}.opt:hover{background:#eef5ff}.opt input{margin-right:8px}.submit,.btn{border:0;border-radius:9px;padding:12px 18px;font-weight:700;cursor:pointer}.submit{background:#2563eb;color:#fff;width:100%;margin-top:10px}.result{display:none;text-align:center;padding:22px 0}.score{font-size:46px;font-weight:800;color:#2563eb}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.btn{background:#16a34a;color:#fff}.btn.gray{background:#64748b}.key{display:none;margin-top:20px;border-top:2px solid #16a34a;padding-top:18px}.sol{padding:12px;border:1px solid #e5e7eb;border-radius:9px;margin:10px 0}.exp{margin-top:8px;background:#f8fafc;padding:10px;border-left:4px solid #16a34a}.badge{position:absolute;right:12px;top:12px;padding:5px 9px;border-radius:99px;color:#fff;font-size:12px}.good{background:#16a34a}.bad{background:#dc2626}@media(max-width:600px){body{padding:10px}.wrap{padding:18px}h1{font-size:24px}.q{padding:15px}.score{font-size:38px}}
 </style></head>
-<body><main class="wrap">
+<body>
+<script>
+(function(){
+  const ok=sessionStorage.getItem('ged_logged_in')==='true' ||
+           localStorage.getItem('ged_persist_session')==='true';
+  if(!ok) window.location.replace('index.html');
+  else if(localStorage.getItem('ged_persist_session')==='true'){
+    sessionStorage.setItem('ged_logged_in','true');
+    const email=localStorage.getItem('ged_user_email');
+    if(email) sessionStorage.setItem('ged_user_email',email);
+  }
+})();
+</script><main class="wrap">
 <a href="practice.html">← Math Topics</a>
 <h1>Slope & Equations</h1><p class="sub">10 GED-style questions on slope, intercepts, linear equations, and graphs.</p>
 <form id="quiz"><div class="student"><label><b>Student Name</b><input name="Student_Name" required placeholder="Your name"></label></div><div id="qs"></div><button class="submit">Submit Quiz</button></form>
