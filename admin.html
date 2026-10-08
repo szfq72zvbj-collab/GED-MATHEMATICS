@@ -69,7 +69,7 @@ async function init(){
  const firstWithQuestions=counts.find(x=>x.count>0);
  await loadQuestions(firstWithQuestions?.id ?? chapters[0]?.id ?? 1);
 }
-async async function loadCount(c){const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id);const e=$("count-"+c.id);if(e)e.textContent=(count??0)+" questions"+((count??0)>0?" · click to edit":"")}
+async function loadCount(c){const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id);const e=$("count-"+c.id);if(e)e.textContent=(count??0)+" questions"+((count??0)>0?" · click to edit":"")}
 async function loadQuestions(chapterId){
  activeChapter=chapterId;$("chapter").value=String(chapterId);
  const {data,error}=await gedSupabase.from("questions").select("id,prompt,difficulty,published").eq("chapter_id",chapterId).order("id");
