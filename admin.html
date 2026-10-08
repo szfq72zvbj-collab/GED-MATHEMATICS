@@ -62,9 +62,14 @@ async function init(){
  $("chapter").innerHTML=chapters.map(c=>'<option value="'+c.id+'">'+c.sort_order+". "+gedEscape(c.title)+'</option>').join("");
  $("chapterList").innerHTML=chapters.map(c=>'<div class="item chapter-item" data-id="'+c.id+'"><strong>'+c.sort_order+". "+gedEscape(c.title)+'</strong><small id="count-'+c.id+'">Loading…</small></div>').join("");
  document.querySelectorAll(".chapter-item").forEach(x=>x.onclick=()=>loadQuestions(Number(x.dataset.id)));
- await Promise.all(chapters.map(loadCount));await loadQuestions(1);
+ const counts=await Promise.all(chapters.map(async ch=>{
+   const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",ch.id);
+   return {id:ch.id,count:count??0};
+ }));
+ const firstWithQuestions=counts.find(x=>x.count>0);
+ await loadQuestions(firstWithQuestions?.id ?? chapters[0]?.id ?? 1);
 }
-async function loadCount(c){const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id);const e=$("count-"+c.id);if(e)e.textContent=(count??0)+" questions"}
+async async function loadCount(c){const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id);const e=$("count-"+c.id);if(e)e.textContent=(count??0)+" questions"+((count??0)>0?" · click to edit":"")}
 async function loadQuestions(chapterId){
  activeChapter=chapterId;$("chapter").value=String(chapterId);
  const {data,error}=await gedSupabase.from("questions").select("id,prompt,difficulty,published").eq("chapter_id",chapterId).order("id");
