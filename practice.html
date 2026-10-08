@@ -220,6 +220,18 @@
   </style>
 </head>
 <body>
+<script>
+(function(){
+  const ok=sessionStorage.getItem('ged_logged_in')==='true' ||
+           localStorage.getItem('ged_persist_session')==='true';
+  if(!ok) window.location.replace('index.html');
+  else if(localStorage.getItem('ged_persist_session')==='true'){
+    sessionStorage.setItem('ged_logged_in','true');
+    const email=localStorage.getItem('ged_user_email');
+    if(email) sessionStorage.setItem('ged_user_email',email);
+  }
+})();
+</script>
 
   <main class="container">
     <a href="dashboard.html" class="btn-back">Return to Dashboard</a>
