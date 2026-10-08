@@ -29,6 +29,7 @@ button{width:100%;padding:14px;border:0;border-radius:11px;background:#2563eb;co
 </form>
 <div class="small">You may need to confirm your email, depending on your Supabase Auth settings.</div>
 <div class="foot">Already have an account? <a href="index.html">Sign in</a></div>
+<a class="foot" style="display:block;margin-top:10px" href="grade12/index.html">← Back to Grade 12 Mathematics</a>
 </main>
 <script>
 const msg=document.getElementById("message");
@@ -37,6 +38,7 @@ if(!GED_AUTH_READY){
  show(GED_AUTH_ERROR,"err");
  document.getElementById("signup").querySelector("button").disabled=true;
 }
+const nextPage=new URLSearchParams(window.location.search).get("next");
 document.getElementById("signup").addEventListener("submit",async e=>{
  e.preventDefault();
  if(!GED_AUTH_READY)return show(GED_AUTH_ERROR,"err");
@@ -65,7 +67,7 @@ document.getElementById("signup").addEventListener("submit",async e=>{
    }
    return show(message,"err");
  }
- if(data.session){window.location.replace("dashboard.html")}
+ if(data.session){window.location.replace(nextPage==="grade12"?"grade12/index.html":"dashboard.html")}
  else show("Account created successfully. Check your email to confirm the account, then return here and sign in.","ok");
 });
 </script>
