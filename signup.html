@@ -33,21 +33,30 @@ button{width:100%;padding:14px;border:0;border-radius:11px;background:#2563eb;co
 <script>
 const msg=document.getElementById("message");
 function show(text,kind){msg.textContent=text;msg.className="msg show "+kind}
-if(!GED_AUTH_READY){show(GED_AUTH_ERROR,"err")}
+if(!GED_AUTH_READY){
+ show(GED_AUTH_ERROR,"err");
+ document.getElementById("signup").querySelector("button").disabled=true;
+}
 document.getElementById("signup").addEventListener("submit",async e=>{
  e.preventDefault();
  if(!GED_AUTH_READY)return show(GED_AUTH_ERROR,"err");
  const button=document.getElementById("submit");
  button.disabled=true;button.textContent="Creating account…";
+ const email=document.getElementById("email").value.trim();
+ const name=document.getElementById("name").value.trim();
+ const password=document.getElementById("password").value;
+ if(!name)return show("Please enter your full name.","err");
+ if(!email)return show("Please enter a valid email address.","err");
+ if(password.length<8)return show("Password must be at least 8 characters.","err");
  const {data,error}=await gedSupabase.auth.signUp({
-   email:document.getElementById("email").value.trim(),
-   password:document.getElementById("password").value,
-   options:{data:{full_name:document.getElementById("name").value.trim()}}
+   email,
+   password,
+   options:{data:{full_name:name}}
  });
  button.disabled=false;button.textContent="Create Account";
  if(error)return show(error.message,"err");
  if(data.session){window.location.replace("dashboard.html")}
- else show("Account created. Check your email to confirm your account, then sign in.","ok");
+ else show("Account created successfully. Check your email to confirm the account, then return here and sign in.","ok");
 });
 </script>
 </body></html>
