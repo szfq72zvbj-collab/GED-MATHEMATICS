@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GED Prep — Quiz</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033}.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e5eaf2;padding:14px 18px}.topin{max-width:1040px;margin:auto;display:flex;justify-content:space-between;gap:16px;align-items:center}.brand{font-weight:900;color:#2563eb}.nav a,.nav button{margin-left:8px;color:#475467;text-decoration:none;background:none;border:0;cursor:pointer;font:inherit}.wrap{max-width:900px;margin:28px auto;padding:0 18px}.panel{background:#fff;border:1px solid #e5eaf2;border-radius:18px;padding:24px;box-shadow:0 12px 32px rgba(15,23,42,.06)}.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.eyebrow{font-size:12px;color:#2563eb;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.title{font-size:30px;margin:5px 0}.muted{color:#667085}.bar{height:8px;background:#e9eef5;border-radius:99px;overflow:hidden;margin:18px 0}.fill{height:100%;width:0;background:#2563eb;transition:width .2s}.q{padding:20px 0;border-top:1px solid #edf1f6}.q:first-child{border-top:0}.q h2{font-size:18px;line-height:1.55;margin:0 0 14px}.opt{display:block;padding:12px 14px;margin:8px 0;border:1px solid #dce3ee;border-radius:10px;background:#fbfcfe;cursor:pointer}.opt:hover{border-color:#9db8ef;background:#f5f8ff}.actions{display:flex;gap:10px;justify-content:space-between;margin-top:20px}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer}.primary{background:#2563eb;color:#fff}.secondary{background:#eef2f7;color:#334155}.result{display:none;text-align:center;padding:20px}.score{font-size:54px;font-weight:900;color:#2563eb}.sol{margin-top:12px;text-align:left;padding:16px;background:#f8fafc;border-radius:10px}.status{padding:12px 14px;border-radius:10px;margin-bottom:18px;display:none}.status.show{display:block}.error{background:#fff1f2;color:#9f1239}.success{background:#ecfdf5;color:#065f46}@media(max-width:600px){.title{font-size:24px}.panel{padding:18px}.actions{flex-direction:column}.btn{width:100%}}
+</style></head>
+<body>
+<header class="top"><div class="topin"><div class="brand">GED PREP</div><nav class="nav"><a href="dashboard.html">Dashboard</a><a href="practice.html">Practice</a><button onclick="gedSignOut()">Sign out</button></nav></div></header>
+<main class="wrap"><div class="panel">
+<div id="status" class="status"></div>
+<div id="intro"><div class="meta"><div><div class="eyebrow">GED Mathematical Reasoning</div><h1 class="title" id="chapterTitle">Loading…</h1><p class="muted" id="chapterDesc"></p></div><div class="muted" id="count"></div></div><div class="bar"><div id="fill" class="fill"></div></div></div>
+<form id="quiz"></form>
+<section id="result" class="result"><h2>Quiz complete</h2><div id="score" class="score"></div><p id="resultText" class="muted"></p><div id="solutions"></div><div style="margin-top:18px"><a class="btn primary" href="practice.html" style="text-decoration:none;display:inline-block">Back to Practice</a></div></section>
+</div></main>
+<script>
+let user,chapterId,questions=[],answers=[];
+const qs=s=>document.getElementById(s);
+function show(text,ok=false){const e=qs("status");e.textContent=text;e.className="status show "+(ok?"success":"error")}
+function mathify(v){return String(v??"").replace(/\$(?!\d)(.*?)\$/gs,"\\($1\\)")}
+async function renderMath(){if(window.MathJax?.typesetPromise)await MathJax.typesetPromise()}
+async function load(){
+ if(!GED_AUTH_READY) return show(GED_AUTH_ERROR);
+ user=await gedRequireUser(); if(!user)return;
+ await gedTouchProfile(user);
+ chapterId=Number(new URLSearchParams(location.search).get("chapter")||1);
+ const [{data:chapter,error:ce},{data:qsData,error:qe}]=await Promise.all([
+   gedSupabase.from("chapters").select("id,title,description").eq("id",chapterId).single(),
+   gedSupabase.from("questions").select("id,prompt,options,correct_index,explanation,difficulty").eq("chapter_id",chapterId).eq("published",true).order("id")
+ ]);
+ if(ce||qe)return show((ce||qe).message||"Unable to load this quiz.");
+ if(!chapter)return show("Chapter not found.");
+ document.title=chapter.title+" — GED Prep"; qs("chapterTitle").textContent=chapter.title; qs("chapterDesc").textContent=chapter.description||"";
+ questions=qsData||[]; answers=new Array(questions.length).fill(null); qs("count").textContent=questions.length+" questions";
+ if(!questions.length){return show("This chapter has no published questions yet. Ask the administrator to add some.")}
+ const form=qs("quiz");
+ form.innerHTML=questions.map((q,i)=>'<section class="q"><h2>Q'+(i+1)+'. '+mathify(q.prompt)+'</h2>'+q.options.map((o,j)=>'<label class="opt"><input type="radio" name="q'+i+'" value="'+j+'"> <strong>'+String.fromCharCode(65+j)+'.</strong> '+mathify(o)+'</label>').join('')+'</section>').join('')+
+   '<div class="actions"><a class="btn secondary" href="practice.html" style="text-decoration:none">Back</a><button class="btn primary" type="submit">Submit Quiz</button></div>';
+ qs("intro").querySelector(".bar").style.display="block";
+ await renderMath();
+ form.querySelectorAll("input").forEach(i=>i.addEventListener("change",()=>{
+   const done=new Set([...form.querySelectorAll("input:checked")].map(x=>x.name)).size;
+   qs("fill").style.width=Math.round(done/questions.length*100)+"%";
+ }));
+ form.addEventListener("submit",submitQuiz);
+}
+async function submitQuiz(e){
+ e.preventDefault();
+ answers=questions.map((_,i)=>{const el=document.querySelector('input[name="q'+i+'"]:checked');return el?Number(el.value):null});
+ if(answers.some(v=>v===null))return show("Please answer every question before submitting.");
+ let score=0;questions.forEach((q,i)=>{if(answers[i]===q.correct_index)score++});
+ const {error}=await gedSupabase.from("quiz_attempts").insert({user_id:user.id,chapter_id:chapterId,score,total:questions.length});
+ if(error)console.warn("Attempt save failed:",error.message);
+ qs("quiz").style.display="none";qs("intro").style.display="none";qs("result").style.display="block";
+ qs("score").textContent=score+"/"+questions.length;
+ const pct=Math.round(score/questions.length*100);
+ qs("resultText").textContent=pct>=80?"Excellent work!":pct>=60?"Good job — keep building consistency.":"Keep practicing this topic and review the solutions below.";
+ qs("solutions").innerHTML=questions.map((q,i)=>'<div class="sol"><b>Q'+(i+1)+': '+(answers[i]===q.correct_index?"Correct":"Incorrect")+' — Answer '+String.fromCharCode(65+q.correct_index)+'</b><div style="margin-top:7px">'+mathify(q.explanation||"No explanation added yet.")+'</div></div>').join("");
+ await renderMath();
+}
+load();
+</script></body></html>
