@@ -1,0 +1,40 @@
+<!doctype html><html lang="en" class="scroll-smooth"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../config.js"></script><script src="../auth.js"></script><script>window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{processEscapes:true}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Grade 12 Mathematics — Learning Dashboard</title>
+<style>
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f9fc;color:#172033}
+.dark body{background:#0b0f19;color:#e5e7eb}.glass{background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border:1px solid rgba(226,232,240,.8)}.dark .glass{background:rgba(15,23,42,.72);border-color:rgba(51,65,85,.7)}
+.card{transition:.2s}.card:hover{transform:translateY(-3px)}.math{overflow-x:auto}
+</style></head>
+<body>
+<header class="sticky top-0 z-40 glass border-b">
+<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+<a href="index.html" class="font-black text-2xl text-indigo-600">∑ Grade 12 Math</a>
+<div class="flex items-center gap-2"><button id="theme" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">◐ Theme</button><a id="admin" href="admin.html" class="hidden px-3 py-2 rounded-xl bg-indigo-600 text-white font-bold">Admin</a><button id="signout" class="px-3 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold">Sign out</button></div>
+</div></header>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<section class="rounded-3xl p-8 md:p-12 bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-xl">
+<div class="text-sm font-bold uppercase tracking-widest opacity-80">Advanced Mathematics</div>
+<h1 class="text-4xl md:text-5xl font-black mt-2">Grade 12 Mathematics</h1>
+<p class="mt-4 max-w-2xl text-white/85 text-lg">Practice chapter by chapter, track your progress, and build confidence with mathematical notation rendered correctly.</p>
+<div class="mt-7 grid sm:grid-cols-3 gap-3">
+<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="attempted">0</div><div class="text-sm text-white/75">Chapters attempted</div></div>
+<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="questions">0</div><div class="text-sm text-white/75">Published questions</div></div>
+<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="average">—</div><div class="text-sm text-white/75">Average score</div></div>
+</div></section>
+<section class="mt-8"><div class="flex items-end justify-between gap-4 mb-4"><div><h2 class="text-2xl font-black">Chapters</h2><p class="text-slate-500 dark:text-slate-400 mt-1">Choose a chapter to start practicing.</p></div><input id="search" class="w-48 sm:w-64 px-4 py-3 rounded-xl border bg-white dark:bg-slate-900" placeholder="Search chapters..."></div><div id="chapters" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div></section>
+</main>
+<script>
+let chapters=[];
+function esc(v){return gedEscape(v)} function applyTheme(){const dark=localStorage.getItem("g12_theme")==="dark";document.documentElement.classList.toggle("dark",dark)}
+document.getElementById("theme").onclick=()=>{localStorage.setItem("g12_theme",document.documentElement.classList.contains("dark")?"light":"dark");applyTheme()};applyTheme();
+async function init(){if(!GED_AUTH_READY)return alert(GED_AUTH_ERROR);const user=await gedRequireUser("signup.html");if(!user)return;await gedTouchProfile(user);
+const prof=await gedSupabase.from("profiles").select("role").eq("id",user.id).single();if(prof.data?.role==="admin")document.getElementById("admin").classList.remove("hidden");
+const c=await gedSupabase.from("grade12_chapters").select("*").order("sort_order");if(c.error)return alert(c.error.message);chapters=c.data||[];
+const [counts,attempts]=await Promise.all([gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}),gedSupabase.from("grade12_attempts").select("chapter_id,score,total,percentage").eq("user_id",user.id)]);
+document.getElementById("questions").textContent=counts.count??0;
+const unique=new Set((attempts.data||[]).map(x=>x.chapter_id));document.getElementById("attempted").textContent=unique.size;
+const av=(attempts.data||[]).map(x=>Number(x.percentage)).filter(Number.isFinite);document.getElementById("average").textContent=av.length?Math.round(av.reduce((a,b)=>a+b,0)/av.length)+"%":"—";
+render();document.getElementById("signout").onclick=gedSignOut;document.getElementById("search").oninput=render}
+function render(){const q=document.getElementById("search").value.toLowerCase();document.getElementById("chapters").innerHTML=chapters.filter(c=>(c.title+" "+c.description).toLowerCase().includes(q)).map(c=>`<a class="card bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm hover:shadow-lg" href="quiz.html?chapter=${c.id}"><div class="flex items-center justify-between"><span class="text-xs font-black uppercase tracking-widest text-indigo-600">Chapter ${c.sort_order}</span><span class="text-slate-400">→</span></div><h3 class="font-black text-lg mt-3">${esc(c.title)}</h3><p class="text-sm text-slate-500 dark:text-slate-400 mt-2">${esc(c.description)}</p></a>`).join("")}
+init();
+</script></body></html>
