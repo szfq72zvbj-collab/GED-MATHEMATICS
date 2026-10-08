@@ -1,40 +1,113 @@
-<!doctype html><html lang="en" class="scroll-smooth"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../config.js"></script><script src="../auth.js"></script><script>window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{processEscapes:true}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-<title>Grade 12 Mathematics — Learning Dashboard</title>
-<style>
-body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f9fc;color:#172033}
-.dark body{background:#0b0f19;color:#e5e7eb}.glass{background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border:1px solid rgba(226,232,240,.8)}.dark .glass{background:rgba(15,23,42,.72);border-color:rgba(51,65,85,.7)}
-.card{transition:.2s}.card:hover{transform:translateY(-3px)}.math{overflow-x:auto}
-</style></head>
-<body>
-<header class="sticky top-0 z-40 glass border-b">
-<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-<a href="index.html" class="font-black text-2xl text-indigo-600">∑ Grade 12 Math</a>
-<div class="flex items-center gap-2"><button id="theme" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">◐ Theme</button><a id="admin" href="admin.html" class="hidden px-3 py-2 rounded-xl bg-indigo-600 text-white font-bold">Admin</a><button id="signout" class="px-3 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold">Sign out</button></div>
-</div></header>
-<main class="max-w-7xl mx-auto px-4 py-8">
-<section class="rounded-3xl p-8 md:p-12 bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-xl">
-<div class="text-sm font-bold uppercase tracking-widest opacity-80">Advanced Mathematics</div>
-<h1 class="text-4xl md:text-5xl font-black mt-2">Grade 12 Mathematics</h1>
-<p class="mt-4 max-w-2xl text-white/85 text-lg">Practice chapter by chapter, track your progress, and build confidence with mathematical notation rendered correctly.</p>
-<div class="mt-7 grid sm:grid-cols-3 gap-3">
-<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="attempted">0</div><div class="text-sm text-white/75">Chapters attempted</div></div>
-<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="questions">0</div><div class="text-sm text-white/75">Published questions</div></div>
-<div class="bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black" id="average">—</div><div class="text-sm text-white/75">Average score</div></div>
-</div></section>
-<section class="mt-8"><div class="flex items-end justify-between gap-4 mb-4"><div><h2 class="text-2xl font-black">Chapters</h2><p class="text-slate-500 dark:text-slate-400 mt-1">Choose a chapter to start practicing.</p></div><input id="search" class="w-48 sm:w-64 px-4 py-3 rounded-xl border bg-white dark:bg-slate-900" placeholder="Search chapters..."></div><div id="chapters" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div></section>
-</main>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grade 12 Mathematics | Math Matrix</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script src="../auth.js"></script>
 <script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{processEscapes:true}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{--bg:#f6f8fc;--panel:#fff;--text:#162033;--muted:#68758a;--line:#e5eaf2;--brand:#4f46e5;--brand2:#2563eb;--good:#10b981;--soft:#eef2ff;--shadow:0 18px 45px rgba(15,23,42,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at top left,#eef2ff 0,#f8fafc 38%,#f6f8fc 100%);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.dark{--bg:#0b1020;--panel:#111827;--text:#eef2ff;--muted:#98a3b8;--line:#253047;--soft:#172036;--shadow:0 18px 45px rgba(0,0,0,.28)}
+body.dark{background:radial-gradient(circle at top left,#171d39 0,#0c1120 45%,#0a0f1b 100%)}
+a{text-decoration:none;color:inherit}.wrap{max-width:1180px;margin:auto;padding:0 18px}.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.78);backdrop-filter:blur(15px);border-bottom:1px solid var(--line)}body.dark .top{background:rgba(11,16,32,.8)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:21px}.mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 10px 25px rgba(79,70,229,.25)}
+.actions{display:flex;align-items:center;gap:8px}.btn{border:1px solid var(--line);background:var(--panel);padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;color:var(--text)}.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-color:transparent}.btn.ghost{background:transparent}.btn:hover{transform:translateY(-1px)}
+.hero{padding:54px 0 36px}.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:25px;align-items:stretch}.hero-card{border:1px solid var(--line);background:var(--panel);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}.hero-main{padding:40px}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:7px 11px;border-radius:999px;background:var(--soft);color:var(--brand);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.dot{width:8px;height:8px;border-radius:50%;background:var(--good)}h1{font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.04em;margin:18px 0 16px}h2{font-size:28px;margin:0}.lead{max-width:680px;color:var(--muted);font-size:17px;line-height:1.7;margin:0}.hero-buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.hero-side{padding:25px;background:linear-gradient(145deg,#312e81,#2563eb);color:#fff;position:relative}.hero-side:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-80px;background:rgba(255,255,255,.08)}.formula{font-size:28px;font-weight:800;margin:14px 0}.side-text{color:rgba(255,255,255,.78);line-height:1.6}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.stat{background:rgba(255,255,255,.1);padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:16px}.stat strong{display:block;font-size:24px}.stat span{font-size:12px;color:rgba(255,255,255,.72)}
+.section{padding:20px 0 56px}.headrow{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:18px}.sub{color:var(--muted);margin-top:5px}.search{width:min(300px,100%);padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);outline:none}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.chapter{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:20px;box-shadow:0 8px 25px rgba(15,23,42,.04);transition:.18s;display:flex;flex-direction:column;min-height:205px}.chapter:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#c7d2fe}.num{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--brand)}.chapter h3{font-size:19px;margin:12px 0 6px}.chapter p{color:var(--muted);line-height:1.55;font-size:14px;margin:0;flex:1}.meta{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.count{font-size:12px;font-weight:800;color:var(--muted)}.start{font-size:13px;font-weight:900;color:var(--brand);padding:8px 10px;border-radius:10px;background:var(--soft)}
+.banner{margin-top:22px;padding:18px 20px;border-radius:18px;background:linear-gradient(90deg,#eef2ff,#eff6ff);border:1px solid #dbe4ff;color:#334155}.banner strong{color:#1e3a8a}.dark .banner{background:#151d33;border-color:#273557;color:#bac5da}.dark .banner strong{color:#c7d2fe}
+.empty{padding:35px;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted);grid-column:1/-1}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:13px}
+@media(max-width:850px){.hero-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.nav{height:auto;padding:12px 0;align-items:flex-start}.actions{flex-wrap:wrap;justify-content:flex-end}.hero-main{padding:28px}.hero-side{padding:22px}.grid{grid-template-columns:1fr}.headrow{flex-direction:column;align-items:stretch}.search{width:100%}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+<a class="brand" href="index.html"><span class="mark">∑</span><span>Math Matrix <span style="opacity:.55">·</span> Grade 12</span></a>
+<div class="actions">
+<button class="btn ghost" id="theme">☾ Theme</button>
+<a class="btn" id="login" href="login.html">Sign in</a>
+<a class="btn primary" id="signup" href="signup.html">Create account</a>
+<a class="btn primary" id="admin" href="admin.html" style="display:none">Admin</a>
+<button class="btn" id="logout" style="display:none">Sign out</button>
+</div>
+</div></header>
+
+<main class="wrap">
+<section class="hero"><div class="hero-grid">
+<div class="hero-card hero-main">
+<span class="eyebrow"><span class="dot"></span> Grade 12 Mathematics</span>
+<h1>Learn the idea.<br><span style="color:var(--brand)">Solve the problem.</span></h1>
+<p class="lead">A focused mathematics practice website for Grade 12 students. Work chapter by chapter, see formulas clearly, and build your own question bank over time.</p>
+<div class="hero-buttons">
+<a id="heroStart" class="btn primary" href="signup.html">Start learning</a>
+<a class="btn" href="#chapters">Explore chapters</a>
+</div>
+<div id="welcome" class="banner" style="display:none"></div>
+</div>
+<div class="hero-card hero-side">
+<div style="font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.75">Math notation preview</div>
+<div class="formula">\(f'(x)=\frac{d}{dx}f(x)\)</div>
+<div class="side-text">Questions can contain fractions, powers, roots, matrices, vectors, limits and other notation without turning into plain text.</div>
+<div class="stat-grid"><div class="stat"><strong id="qtotal">12</strong><span>Starter questions</span></div><div class="stat"><strong id="chdone">0</strong><span>Chapters attempted</span></div><div class="stat"><strong id="avg">—</strong><span>Average score</span></div></div>
+</div>
+</div></section>
+
+<section class="section" id="chapters">
+<div class="headrow"><div><h2>Chapters</h2><div class="sub">Start with the small starter set, then add your own questions from Admin.</div></div><input id="search" class="search" placeholder="Search chapters..."></div>
+<div id="grid" class="grid"><div class="empty">Loading chapters…</div></div>
+</section>
+</main>
+
+<footer><div class="wrap">Grade 12 Mathematics · Math Matrix · Built for focused practice</div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
 let chapters=[];
-function esc(v){return gedEscape(v)} function applyTheme(){const dark=localStorage.getItem("g12_theme")==="dark";document.documentElement.classList.toggle("dark",dark)}
-document.getElementById("theme").onclick=()=>{localStorage.setItem("g12_theme",document.documentElement.classList.contains("dark")?"light":"dark");applyTheme()};applyTheme();
-async function init(){if(!GED_AUTH_READY)return alert(GED_AUTH_ERROR);const user=await gedRequireUser("signup.html");if(!user)return;await gedTouchProfile(user);
-const prof=await gedSupabase.from("profiles").select("role").eq("id",user.id).single();if(prof.data?.role==="admin")document.getElementById("admin").classList.remove("hidden");
-const c=await gedSupabase.from("grade12_chapters").select("*").order("sort_order");if(c.error)return alert(c.error.message);chapters=c.data||[];
-const [counts,attempts]=await Promise.all([gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}),gedSupabase.from("grade12_attempts").select("chapter_id,score,total,percentage").eq("user_id",user.id)]);
-document.getElementById("questions").textContent=counts.count??0;
-const unique=new Set((attempts.data||[]).map(x=>x.chapter_id));document.getElementById("attempted").textContent=unique.size;
-const av=(attempts.data||[]).map(x=>Number(x.percentage)).filter(Number.isFinite);document.getElementById("average").textContent=av.length?Math.round(av.reduce((a,b)=>a+b,0)/av.length)+"%":"—";
-render();document.getElementById("signout").onclick=gedSignOut;document.getElementById("search").oninput=render}
-function render(){const q=document.getElementById("search").value.toLowerCase();document.getElementById("chapters").innerHTML=chapters.filter(c=>(c.title+" "+c.description).toLowerCase().includes(q)).map(c=>`<a class="card bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm hover:shadow-lg" href="quiz.html?chapter=${c.id}"><div class="flex items-center justify-between"><span class="text-xs font-black uppercase tracking-widest text-indigo-600">Chapter ${c.sort_order}</span><span class="text-slate-400">→</span></div><h3 class="font-black text-lg mt-3">${esc(c.title)}</h3><p class="text-sm text-slate-500 dark:text-slate-400 mt-2">${esc(c.description)}</p></a>`).join("")}
+function theme(){document.documentElement.classList.toggle("dark",localStorage.getItem("g12_theme")==="dark");$("theme").textContent=document.documentElement.classList.contains("dark")?"☀ Light":"☾ Theme"}
+$("theme").onclick=()=>{localStorage.setItem("g12_theme",document.documentElement.classList.contains("dark")?"light":"dark");theme()};theme();
+
+function render(){
+ const term=$("search").value.toLowerCase().trim();
+ const list=chapters.filter(c=>(c.title+" "+(c.description||"")).toLowerCase().includes(term));
+ $("grid").innerHTML=list.length?list.map(c=>`<a class="chapter" href="quiz.html?chapter=${c.id}">
+ <span class="num">Chapter ${c.sort_order}</span><h3>${gedEscape(c.title)}</h3><p>${gedEscape(c.description||"")}</p>
+ <div class="meta"><span class="count" id="qc-${c.id}">Questions: …</span><span class="start">Open →</span></div></a>`).join(""):'<div class="empty">No matching chapter.</div>';
+}
+async function loadCounts(){
+ for(const c of chapters){
+  const r=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id).eq("published",true);
+  const el=$("qc-"+c.id);if(el)el.textContent="Questions: "+(r.count??0);
+ }
+ const all=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("published",true);$("qtotal").textContent=all.count??0;
+}
+async function init(){
+ const cr=await gedSupabase.from("grade12_chapters").select("*").order("sort_order");
+ if(cr.error){$("grid").innerHTML='<div class="empty">Unable to load chapters right now.</div>';return}
+ chapters=cr.data||[];render();
+ if(!GED_AUTH_READY){return}
+ const {data}=await gedSupabase.auth.getSession();const user=data.session?.user;
+ if(!user){loadCounts();return}
+ await gedTouchProfile(user);
+ $("login").style.display="none";$("signup").style.display="none";$("logout").style.display="inline-block";$("heroStart").href="#chapters";$("heroStart").textContent="Continue learning";
+ const p=await gedSupabase.from("profiles").select("full_name,role").eq("id",user.id).single();
+ if(p.data?.role==="admin")$("admin").style.display="inline-block";
+ const attempts=await gedSupabase.from("grade12_attempts").select("chapter_id,percentage").eq("user_id",user.id);
+ const unique=new Set((attempts.data||[]).map(x=>x.chapter_id));$("chdone").textContent=unique.size;
+ const scores=(attempts.data||[]).map(x=>Number(x.percentage)).filter(Number.isFinite);
+ if(scores.length)$("avg").textContent=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+"%";
+ const name=p.data?.full_name||user.user_metadata?.full_name||user.email?.split("@")[0]||"Student";
+ $("welcome").style.display="block";$("welcome").innerHTML="Welcome back, <strong>"+gedEscape(name)+"</strong>. Your progress is saved to your account.";
+ loadCounts();
+}
+$("search").oninput=render;$("logout").onclick=gedSignOut;
 init();
-</script></body></html>
+</script>
+</body>
+</html>
