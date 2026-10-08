@@ -83,11 +83,21 @@ function render(){
  <div class="meta"><span class="count" id="qc-${c.id}">Questions: …</span><span class="start">Open →</span></div></a>`).join(""):'<div class="empty">No matching chapter.</div>';
 }
 async function loadCounts(){
- for(const c of chapters){
-  const r=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id).eq("published",true);
-  const el=$("qc-"+c.id);if(el)el.textContent="Questions: "+(r.count??0);
+ const r=await gedSupabase
+   .from("grade12_questions")
+   .select("id,chapter_id")
+   .eq("published",true);
+ if(r.error){
+   $("qtotal").textContent="—";
+   return;
  }
- const all=await gedSupabase.from("grade12_questions").select("id",{count:"exact",head:true}).eq("published",true);$("qtotal").textContent=all.count??0;
+ const counts={};
+ for(const q of (r.data||[])) counts[q.chapter_id]=(counts[q.chapter_id]||0)+1;
+ for(const c of chapters){
+   const el=$("qc-"+c.id);
+   if(el)el.textContent="Questions: "+(counts[c.id]||0);
+ }
+ $("qtotal").textContent=(r.data||[]).length;
 }
 async function init(){
  const cr=await gedSupabase.from("grade12_chapters").select("*").order("sort_order");
