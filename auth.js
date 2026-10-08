@@ -10,14 +10,21 @@
     return;
   }
 
-  window.gedSupabase = supabase.createClient(cfg.url, cfg.publishableKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
-  window.GED_AUTH_READY = true;
+  try {
+    window.gedSupabase = supabase.createClient(cfg.url, cfg.publishableKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
+    window.GED_AUTH_READY = true;
+  } catch (error) {
+    window.GED_AUTH_READY = false;
+    window.GED_AUTH_ERROR = "Supabase configuration is invalid. Check the project URL and publishable key in config.js.";
+    console.error("GED Prep authentication setup failed:", error);
+    return;
+  }
 
   window.gedEscape = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
