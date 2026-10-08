@@ -1,275 +1,36 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GED — Practice Sets</title>
-  <style>
-    /* Professional Practice Page Style */
-    :root {
-      --bg: #f8fafc;
-      --container-bg: #ffffff;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-light: #3b82f6;
-      --accent: #10b981;
-      --text: #1e293b;
-      --text-light: #64748b;
-      --text-muted: #94a3b8;
-      --border: #e2e8f0;
-      --border-light: #f1f5f9;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
-      --radius: 12px;
-      --radius-sm: 8px;
-      --radius-lg: 16px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 24px;
-      line-height: 1.5;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-      background: var(--container-bg);
-      border-radius: var(--radius-lg);
-      padding: 40px;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border-light);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
-    }
-
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
-      text-decoration: none;
-      color: var(--primary);
-      font-weight: 600;
-      font-size: 14px;
-      transition: color 0.2s;
-      padding: 8px 0;
-    }
-
-    .btn-back:hover {
-      color: var(--primary-dark);
-    }
-
-    .btn-back::before {
-      content: '←';
-    }
-
-    header {
-      margin-bottom: 32px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-    }
-
-    .subtitle {
-      color: var(--text-light);
-      font-size: 16px;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .practice-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .practice-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .practice-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--accent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .practice-card:hover {
-      border-color: var(--accent);
-      transform: translateX(8px);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.08);
-    }
-
-    .practice-card:hover::before {
-      opacity: 1;
-    }
-
-    .info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .info strong {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .info span {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.5;
-    }
-
-    .arrow {
-      color: var(--accent);
-      font-weight: bold;
-      font-size: 20px;
-      transition: transform 0.3s;
-    }
-
-    .practice-card:hover .arrow {
-      transform: translateX(4px);
-    }
-
-    .more-section {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px dashed var(--border);
-    }
-
-    .more-card {
-      border-style: dashed !important;
-      background: var(--border-light) !important;
-    }
-
-    .more-card:hover {
-      background: white !important;
-    }
-
-    footer {
-      margin-top: 48px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border-light);
-    }
-
-    footer strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 16px; }
-      .container { padding: 24px; }
-      h1 { font-size: 24px; }
-      .practice-card { padding: 16px 20px; }
-      .info strong { font-size: 16px; }
-      .info span { font-size: 13px; }
-    }
-  </style>
-</head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GED Prep — Math Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#172033;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:24px}.wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.top a{color:#2563eb;text-decoration:none;font-weight:700}.hero{background:linear-gradient(135deg,#172554,#2563eb);color:#fff;border-radius:20px;padding:28px;margin-bottom:20px}.hero h1{margin:0 0 8px;font-size:32px}.hero p{margin:0;color:#dbeafe;line-height:1.55}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid #e5eaf2;border-radius:16px;padding:18px;box-shadow:0 8px 20px rgba(15,23,42,.04);transition:.2s}.card:hover{transform:translateY(-3px);border-color:#9db8ef;box-shadow:0 14px 28px rgba(37,99,235,.08)}.num{font-size:12px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:.08em}.title{font-weight:800;font-size:18px;margin:6px 0}.desc{color:#667085;font-size:13px;line-height:1.5;min-height:40px}.count{margin-top:12px;display:inline-block;padding:5px 8px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-size:12px;font-weight:800}.empty{opacity:.62}.footer{margin-top:26px;text-align:center;color:#8a94a6;font-size:13px}
+</style></head>
 <body>
+<div class="wrap">
+<div class="top"><a href="dashboard.html">← Dashboard</a><button onclick="gedSignOut()" style="border:0;background:none;color:#475467;cursor:pointer;font:inherit">Sign out</button></div>
+<section class="hero"><h1>GED Mathematical Reasoning</h1><p>Choose a chapter. Questions, answers, explanations, difficulty, and math formatting are stored in the database, so new content can be added without changing the page.</p></section>
+<div id="message" style="display:none;padding:12px 14px;border-radius:10px;background:#fff1f2;color:#9f1239;margin-bottom:15px"></div>
+<section id="grid" class="grid"></section>
+<div class="footer">© 2026 GED Prep — Created by Aung Naing Min</div>
+</div>
 <script>
-(function(){
-  const ok=sessionStorage.getItem('ged_logged_in')==='true' ||
-           localStorage.getItem('ged_persist_session')==='true';
-  if(!ok) window.location.replace('index.html');
-  else if(localStorage.getItem('ged_persist_session')==='true'){
-    sessionStorage.setItem('ged_logged_in','true');
-    const email=localStorage.getItem('ged_user_email');
-    if(email) sessionStorage.setItem('ged_user_email',email);
-  }
-})();
+const grid=document.getElementById("grid"),message=document.getElementById("message");
+function show(t){message.textContent=t;message.style.display="block"}
+async function load(){
+ if(!GED_AUTH_READY)return show(GED_AUTH_ERROR);
+ const user=await gedRequireUser();if(!user)return;await gedTouchProfile(user);
+ const {data:chapters,error}=await gedSupabase.from("chapters").select("id,title,description,sort_order").order("sort_order");
+ if(error)return show(error.message);
+ const cards=await Promise.all((chapters||[]).map(async c=>{
+   const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id).eq("published",true);
+   return {c,count:count||0};
+ }));
+ grid.innerHTML=cards.map(({c,count})=>'<a class="card '+(count?'':'empty')+'" href="quiz.html?chapter='+c.id+'"><div class="num">Chapter '+c.sort_order+'</div><div class="title">'+gedEscape(c.title)+'</div><div class="desc">'+gedEscape(c.description||"")+'</div><span class="count">'+count+' published question'+(count===1?'':'s')+'</span></a>').join("");
+}
+load();
 </script>
-
-  <main class="container">
-    <a href="dashboard.html" class="btn-back">Return to Dashboard</a>
-    
-    <header>
-      <h1>GED Math Topics</h1>
-      <p class="subtitle">Choose a Math topic. Each set contains 20 GED-style questions with answers and explanations.</p>
-    </header>
-
-    <div class="practice-list">
-      <!-- Practice Set 1 -->
-      <a href="p1.html" class="practice-card"><div class="info"><strong>Algebra</strong><span>20 questions on equations, expressions, and algebraic reasoning</span></div><div class="arrow">→</div></a>
-
-      <!-- Practice Set 2 -->
-      <a href="p2.html" class="practice-card"><div class="info"><strong>Ratios &amp; Proportions</strong><span>20 questions on ratios, rates, proportions, and scale</span></div><div class="arrow">→</div></a>
-
-      <!-- Practice Set 3 -->
-      <a href="p3.html" class="practice-card"><div class="info"><strong>Percentages</strong><span>20 questions on percent, discounts, tax, markup, and percent change</span></div><div class="arrow">→</div></a>
-      
-      <!-- Practice Set 4 -->
-      <a href="p4.html" class="practice-card"><div class="info"><strong>Slope &amp; Equations</strong><span>20 questions on slope, intercepts, and linear equations</span></div><div class="arrow">→</div></a>
-
-      <!-- More Section -->
-      <div class="more-section">
-        <a href="comingsoon.html" class="practice-card more-card">
-          <div class="info">
-            <strong>Additional Resources</strong>
-            <span>Worksheets, exam prep materials, and study guides</span>
-          </div>
-          <div class="arrow">+</div>
-        </a>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    © 2026 GED Prep — Created by <strong>Aung Naing Min</strong>
-  </footer>
-
-</body>
-</html>
+</body></html>
