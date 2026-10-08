@@ -54,7 +54,17 @@ document.getElementById("signup").addEventListener("submit",async e=>{
    options:{data:{full_name:name}}
  });
  button.disabled=false;button.textContent="Create Account";
- if(error)return show(error.message,"err");
+ if(error){
+   let message=error.message||"Unable to create the account.";
+   if(/Database error saving new user/i.test(message)){
+     message += " Make sure supabase/schema.sql has been run in your Supabase SQL Editor.";
+   } else if(/redirect url/i.test(message)){
+     message += " Check the Supabase Auth URL Configuration and add your deployed website URL.";
+   } else if(/already registered|already been registered|user already exists/i.test(message)){
+     message = "An account with this email already exists. Use Sign in or Forgot password.";
+   }
+   return show(message,"err");
+ }
  if(data.session){window.location.replace("dashboard.html")}
  else show("Account created successfully. Check your email to confirm the account, then return here and sign in.","ok");
 });
