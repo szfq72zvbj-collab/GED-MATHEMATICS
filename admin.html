@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GED Prep — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033}.top{background:#fff;border-bottom:1px solid #e5eaf2;padding:14px 20px}.topin{max-width:1180px;margin:auto;display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;color:#2563eb}.top a{color:#475467;text-decoration:none;margin-right:12px}.wrap{max-width:1180px;margin:24px auto;padding:0 18px;display:grid;grid-template-columns:320px 1fr;gap:18px}.panel{background:#fff;border:1px solid #e5eaf2;border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.05)}h1{margin:0 0 4px}.muted{color:#667085}.tabs{display:flex;gap:8px;margin-bottom:14px}.tabs button{border:1px solid #dbe3ee;background:#fff;padding:9px 12px;border-radius:9px;font-weight:800;cursor:pointer}.tabs button.active{background:#2563eb;color:#fff;border-color:#2563eb}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:10px 11px;border:1px solid #d7deea;border-radius:9px;font:inherit}.field textarea{min-height:90px;resize:vertical}.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}.button{border:0;border-radius:9px;padding:11px 13px;font-weight:800;cursor:pointer}.primary{background:#2563eb;color:#fff}.gray{background:#edf2f7;color:#334155}.danger{background:#dc2626;color:#fff}.list{margin-top:12px;max-height:560px;overflow:auto}.item{padding:11px;border:1px solid #e6ebf2;border-radius:10px;margin:8px 0;cursor:pointer}.item:hover{border-color:#9db8ef}.item strong{display:block;font-size:13px}.item small{color:#8a94a6}.status{margin:12px 0;padding:10px 12px;border-radius:9px;display:none}.status.show{display:block}.ok{background:#ecfdf5;color:#065f46}.err{background:#fff1f2;color:#9f1239}.users table{width:100%;border-collapse:collapse}.users th,.users td{padding:10px;border-bottom:1px solid #edf1f6;text-align:left;font-size:13px}.preview{margin-top:14px;padding:14px;background:#f8fafc;border-radius:10px}.toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}@media(max-width:900px){.wrap{grid-template-columns:1fr}.choices{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header class="top"><div class="topin"><div class="brand">GED PREP ADMIN</div><div><a href="dashboard.html">Dashboard</a><button class="button gray" onclick="gedSignOut()">Sign out</button></div></div></header>
+<main class="wrap">
+<aside class="panel">
+<h2>Manage</h2>
+<div class="tabs"><button id="qTab" class="active">Questions</button><button id="uTab">Users</button></div>
+<div id="chapterList" class="list"></div>
+</aside>
+<section class="panel">
+<div id="status" class="status"></div>
+<div id="questionsPane">
+<div class="toolbar"><div><h1 id="formTitle">Add Question</h1><div class="muted">Write math as <code>\\(x^2+1\\)</code> or <code>$$x^2+1$$</code>.</div></div><button class="button gray" id="newBtn">New</button></div>
+<form id="questionForm">
+<input type="hidden" id="questionId">
+<div class="field"><label>Chapter</label><select id="chapter" required></select></div>
+<div class="field"><label>Question / prompt</label><textarea id="prompt" required placeholder="Solve \\(2x+5=17\\)."></textarea></div>
+<div class="choices">
+<div class="field"><label>A</label><input id="a" required></div><div class="field"><label>B</label><input id="b" required></div>
+<div class="field"><label>C</label><input id="c" required></div><div class="field"><label>D</label><input id="d" required></div>
+</div>
+<div class="field"><label>Correct answer</label><select id="correct"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
+<div class="field"><label>Explanation</label><textarea id="explanation" placeholder="Show the steps clearly using \\(x=6\\)."></textarea></div>
+<div class="field"><label>Difficulty</label><select id="difficulty"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
+<div class="field"><label><input type="checkbox" id="published" checked> Published</label></div>
+<div style="display:flex;gap:8px"><button class="button primary" type="submit">Save Question</button><button class="button danger" id="deleteBtn" type="button" style="display:none">Delete</button></div>
+</form>
+<div class="preview"><b>Math preview</b><div id="preview"></div></div>
+</div>
+<div id="usersPane" class="users" style="display:none">
+<div class="toolbar"><div><h1>Users</h1><div class="muted">Registered accounts and recent activity.</div></div><button class="button gray" id="refreshUsers">Refresh</button></div>
+<div id="users"></div>
+</div>
+</section></main>
+<script>
+let chapters=[],user,activeChapter=1;
+const $=id=>document.getElementById(id);
+function msg(t,ok=false){$("status").textContent=t;$("status").className="status show "+(ok?"ok":"err")}
+function mathify(v){return String(v??"").replace(/\$(?!\d)(.*?)\$/gs,"\\($1\\)")}
+async function typeset(){if(window.MathJax?.typesetPromise)await MathJax.typesetPromise()}
+function clearForm(){["questionId","prompt","a","b","c","d","explanation"].forEach(id=>$(id).value="");$("correct").value="0";$("difficulty").value="medium";$("published").checked=true;$("deleteBtn").style.display="none";$("formTitle").textContent="Add Question";updatePreview()}
+function updatePreview(){$("preview").innerHTML=(mathify($("prompt").value)||"Type a prompt above.")+"<div style='margin-top:8px'>A. "+mathify($("a").value)+"<br>B. "+mathify($("b").value)+"<br>C. "+mathify($("c").value)+"<br>D. "+mathify($("d").value)+"</div><hr>"+mathify($("explanation").value);typeset()}
+async function init(){
+ if(!GED_AUTH_READY)return msg(GED_AUTH_ERROR);
+ user=await gedRequireUser();if(!user)return;await gedTouchProfile(user);
+ const {data:profile,error:pe}=await gedSupabase.from("profiles").select("role").eq("id",user.id).single();
+ if(pe||profile?.role!=="admin")return msg("Administrator access required.");
+ const {data,error}=await gedSupabase.from("chapters").select("id,title,sort_order").order("sort_order");
+ if(error)return msg(error.message);chapters=data||[];
+ $("chapter").innerHTML=chapters.map(c=>'<option value="'+c.id+'">'+c.sort_order+". "+gedEscape(c.title)+'</option>').join("");
+ $("chapterList").innerHTML=chapters.map(c=>'<div class="item chapter-item" data-id="'+c.id+'"><strong>'+c.sort_order+". "+gedEscape(c.title)+'</strong><small id="count-'+c.id+'">Loading…</small></div>').join("");
+ document.querySelectorAll(".chapter-item").forEach(x=>x.onclick=()=>loadQuestions(Number(x.dataset.id)));
+ await Promise.all(chapters.map(loadCount));await loadQuestions(1);
+}
+async function loadCount(c){const {count}=await gedSupabase.from("questions").select("id",{count:"exact",head:true}).eq("chapter_id",c.id);const e=$("count-"+c.id);if(e)e.textContent=(count??0)+" questions"}
+async function loadQuestions(chapterId){
+ activeChapter=chapterId;$("chapter").value=String(chapterId);
+ const {data,error}=await gedSupabase.from("questions").select("id,prompt,difficulty,published").eq("chapter_id",chapterId).order("id");
+ if(error)return msg(error.message);
+ document.querySelectorAll(".chapter-item").forEach(x=>x.style.outline=Number(x.dataset.id)===chapterId?"2px solid #2563eb":"none");
+ const old=document.getElementById("existingList");if(old)old.remove();
+ const box=document.createElement("div");box.id="existingList";box.className="list";
+ box.innerHTML=(data||[]).map(q=>'<div class="item editq" data-id="'+q.id+'"><strong>Q'+q.id+' · '+gedEscape(q.prompt.replace(/\\\(|\\\)|\$|\$\$/g,"").slice(0,90))+'</strong><small>'+gedEscape(q.difficulty)+(q.published?" · Published":" · Draft")+'</small></div>').join("");
+ $("questionsPane").prepend(box);
+ box.querySelectorAll(".editq").forEach(e=>e.onclick=()=>editQuestion(Number(e.dataset.id)));
+}
+async function editQuestion(id){
+ const {data,error}=await gedSupabase.from("questions").select("*").eq("id",id).single();
+ if(error)return msg(error.message);
+ $("questionId").value=data.id;$("chapter").value=data.chapter_id;$("prompt").value=data.prompt;
+ ["a","b","c","d"].forEach((id,i)=>$(id).value=data.options?.[i]||"");
+ $("correct").value=data.correct_index;$("explanation").value=data.explanation||"";$("difficulty").value=data.difficulty;$("published").checked=data.published;
+ $("formTitle").textContent="Edit Question #"+data.id;$("deleteBtn").style.display="inline-block";updatePreview();window.scrollTo({top:0,behavior:"smooth"});
+}
+$("questionForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const payload={chapter_id:Number($("chapter").value),prompt:$("prompt").value.trim(),options:[$("a").value.trim(),$("b").value.trim(),$("c").value.trim(),$("d").value.trim()],correct_index:Number($("correct").value),explanation:$("explanation").value.trim(),difficulty:$("difficulty").value,published:$("published").checked,created_by:user.id};
+ const id=$("questionId").value;
+ const result=id?await gedSupabase.from("questions").update(payload).eq("id",id):await gedSupabase.from("questions").insert(payload);
+ if(result.error)return msg(result.error.message);
+ msg("Question saved.",true);const ch=payload.chapter_id;clearForm();await loadQuestions(ch);await loadCount({id:ch});
+});
+$("deleteBtn").onclick=async()=>{
+ const id=$("questionId").value;if(!id||!confirm("Delete this question?"))return;
+ const {error}=await gedSupabase.from("questions").delete().eq("id",id);if(error)return msg(error.message);
+ msg("Question deleted.",true);clearForm();await loadQuestions(activeChapter);await loadCount({id:activeChapter})
+};
+$("newBtn").onclick=clearForm;
+["prompt","a","b","c","d","explanation"].forEach(id=>$(id).addEventListener("input",updatePreview));
+$("qTab").onclick=()=>{$("qTab").classList.add("active");$("uTab").classList.remove("active");$("questionsPane").style.display="block";$("usersPane").style.display="none"};
+$("uTab").onclick=async()=>{$("uTab").classList.add("active");$("qTab").classList.remove("active");$("questionsPane").style.display="none";$("usersPane").style.display="block";await loadUsers()};
+$("refreshUsers").onclick=loadUsers;
+async function loadUsers(){
+ const {data,error}=await gedSupabase.from("profiles").select("full_name,email,role,created_at,last_seen").order("created_at",{ascending:false});
+ if(error)return msg(error.message);
+ $("users").innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Last seen</th></tr></thead><tbody>'+
+ (data||[]).map(u=>'<tr><td>'+gedEscape(u.full_name||"")+'</td><td>'+gedEscape(u.email||"")+'</td><td>'+gedEscape(u.role)+'</td><td>'+new Date(u.created_at).toLocaleDateString()+'</td><td>'+(u.last_seen?new Date(u.last_seen).toLocaleString():"—")+'</td></tr>').join("")+
+ '</tbody></table>';
+}
+init();
+</script></body></html>
