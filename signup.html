@@ -67,8 +67,15 @@ document.getElementById("signup").addEventListener("submit",async e=>{
    }
    return show(message,"err");
  }
- if(data.session){window.location.replace(nextPage==="grade12"?"grade12/index.html":"dashboard.html")}
- else show("Account created successfully. Check your email to confirm the account, then return here and sign in.","ok");
+ if(data.session){
+   window.location.replace(nextPage==="grade12"?"grade12/index.html":"dashboard.html");
+ } else if(nextPage==="grade12"){
+   // Hosted Supabase projects normally require email confirmation.
+   // Open the Grade 12 site immediately and show the confirmation message there.
+   window.location.replace("grade12/index.html?signup=success");
+ } else {
+   show("Account created successfully. Check your email to confirm the account, then return here and sign in.","ok");
+ }
 });
 </script>
 </body></html>
