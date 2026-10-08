@@ -1,85 +1,64 @@
-# GED Prep Website - Professional Login Flow
+# GED Mathematics Prep
 
-## Overview
-A professionally designed GED preparation website with a modern login-first authentication flow. The design features a clean, sophisticated interface with smooth animations and responsive layouts.
+A real GED Mathematical Reasoning learning platform with accounts, persistent progress, a database question bank, MathJax formatting, and an admin area.
 
-## New Professional Structure
-1. **index.html** - Professional login page (entry point)
-2. **dashboard.html** - Modern course dashboard with progress tracking
-3. **practice.html** - Practice questions hub
-4. **p1.html** - Interactive algebra quiz
-5. **comingsoon.html** - Elegant placeholder for future content
+## Website structure
 
-## Design Features
-- **Modern Color Palette**: Sophisticated blues and greens with proper contrast
-- **Smooth Animations**: Hover effects, loading animations, and transitions
-- **Responsive Design**: Fully responsive across mobile, tablet, and desktop
-- **Professional Typography**: Clean Inter font with proper hierarchy
-- **Interactive Elements**: Password toggle, demo credentials button, loading states
-- **Progress Tracking**: Visual course progress indicator
+- `index.html` — sign in
+- `signup.html` — create account
+- `reset.html` — request password reset
+- `reset-password.html` — set a new password
+- `dashboard.html` — student dashboard and progress
+- `practice.html` — all 13 chapters, loaded from the database
+- `quiz.html?chapter=N` — reusable quiz engine for any chapter
+- `admin.html` — add/edit/delete/publish questions and view users
+- `config.js` — Supabase browser configuration
+- `auth.js` — shared authentication helpers
+- `supabase/schema.sql` — database tables, trigger, and RLS policies
+- `supabase/seed.sql` — current practice-question seed data
 
-## Login Credentials (Demo)
-- **Email**: `student@gedprep.com`
-- **Password**: `password123`
+## Why Supabase
 
-## Enhanced Features
+Supabase provides the real account system and PostgreSQL database. The browser uses the public publishable key; the database is protected by Row Level Security. Never place a service_role/secret key in the browser repository.
 
-### 1. Professional Login Page (`index.html`)
-- Modern gradient design with subtle animations
-- Password visibility toggle
-- Real-time form validation with helpful error messages
-- "Use Demo Credentials" button for easy testing
-- Loading animation during authentication
-- Session management with browser storage
+## Setup
 
-### 2. Enhanced Dashboard (`dashboard.html`)
-- Personalized welcome message with user avatar
-- Visual course progress bar
-- Chapter cards with hover effects and numbering
-- User information display with last login time
-- Professional logout with confirmation dialog
-- Keyboard shortcut support (Ctrl+L for logout)
+1. Create a Supabase project.
+2. Run `supabase/schema.sql` in SQL Editor.
+3. Run `supabase/seed.sql`.
+4. Put your project URL and publishable key in `config.js`.
+5. Configure your deployed site URL in Supabase Auth.
+6. Create your account using `signup.html`.
+7. Promote your account to admin:
+   `update public.profiles set role='admin' where email='YOUR_EMAIL_HERE';`
+8. Open `admin.html` to manage questions and see registered users.
 
-### 3. Practice Hub (`practice.html`)
-- Clean practice set cards with subtle animations
-- Visual indicators for available content
-- Responsive grid layout
-- Consistent professional styling
+## Question authoring
 
-### 4. Coming Soon Page (`comingsoon.html`)
-- Animated construction icon
-- Professional placeholder design
-- Consistent navigation
+Questions live in the database, so adding a question does not require editing an HTML file.
 
-## Technical Implementation
-- **Session Management**: Uses `sessionStorage` for front-end session tracking
-- **Form Validation**: Real-time validation with custom error messages
-- **Responsive CSS**: Flexbox and Grid layouts with media queries
-- **JavaScript**: Modular code with proper error handling
-- **Accessibility**: ARIA labels and keyboard navigation support
+The admin editor supports four choices, a correct-answer selector, difficulty, publish/draft state, explanations, and a live math preview.
 
-## Testing Instructions
-1. **Open Login**: Open `index.html` in browser
-2. **Test Credentials**: Use demo credentials or click "Use Demo Credentials"
-3. **Login Flow**: Click "Sign In" → redirects to dashboard after 1.5 seconds
-4. **Session Protection**: Try accessing `dashboard.html` directly → redirects to login
-5. **Navigation Test**: Explore all pages and test back buttons
-6. **Logout Test**: Click logout → confirms → returns to login
-7. **Mobile Test**: Resize browser to test responsive design
+Use LaTeX consistently:
+- Inline: \\(x^2+3x-4=0\\)
+- Display: `$$x = \\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$$`
 
-## Files Updated with Professional Design
-- `index.html` - Complete redesign with professional login interface
-- `dashboard.html` - Modern dashboard with user info and progress tracking
-- `practice.html` - Enhanced practice hub with improved UX
-- `comingsoon.html` - Professional placeholder design
+The quiz renderer converts legacy `$...$` math into MathJax inline math while leaving currency such as `$60` alone.
 
-## Browser Compatibility
-- Chrome, Firefox, Safari, Edge (latest versions)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-- Responsive down to 320px width
+## Current question content
 
-## Notes
-- This is a front-end demonstration showcasing professional design patterns
-- In production, authentication would be server-side with proper security
-- Session management would use secure HTTP-only cookies or JWT tokens
-- All animations use CSS transitions for smooth performance
+The existing four practice sets have been moved into the database:
+- Algebraic Expressions
+- Ratios, Rates & Proportions
+- Percents & Applications
+- Slope & Graphing
+
+The remaining chapters are already in the database and can be filled from `admin.html`.
+
+## Security note
+
+This is a static GitHub Pages front end backed by Supabase. Supabase Auth handles identities and sessions, and PostgreSQL RLS controls rows. For high-stakes exam delivery, move answer checking to a server-side RPC/Edge Function so correct answers are never sent to the browser before submission.
+
+## Sources
+
+Supabase Auth supports password sign-up and sign-in through the JavaScript client. Supabase recommends Row Level Security for exposed tables and warns not to expose service-role keys in browser code.
