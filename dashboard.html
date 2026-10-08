@@ -3,86 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GED — Dashboard</title>
+  <title>GED Prep — Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
   <script>
-    // Dashboard initialization
-    window.addEventListener('DOMContentLoaded', function() {
-      // Check if we have a session flag
-      const hasSession =
-        sessionStorage.getItem('ged_logged_in') === 'true' ||
-        localStorage.getItem('ged_persist_session') === 'true';
-
-      if (localStorage.getItem('ged_persist_session') === 'true') {
-        sessionStorage.setItem('ged_logged_in', 'true');
-        const savedEmail = localStorage.getItem('ged_user_email');
-        if (savedEmail) sessionStorage.setItem('ged_user_email', savedEmail);
+    window.addEventListener('DOMContentLoaded', async function(){
+      if(!window.GED_AUTH_READY){document.getElementById('welcomeMessage').textContent=window.GED_AUTH_ERROR||'Authentication is not configured.';return}
+      const user=await gedRequireUser();if(!user)return;
+      await gedTouchProfile(user);
+      const {data:profile}=await gedSupabase.from('profiles').select('full_name,email,role,last_seen').eq('id',user.id).single();
+      const name=profile?.full_name||user.user_metadata?.full_name||user.email?.split('@')[0]||'Student';
+      document.getElementById('userEmail').textContent=profile?.email||user.email||'';
+      document.getElementById('welcomeMessage').innerHTML='Welcome back, <strong>'+gedEscape(name)+'</strong>! Continue your GED preparation.';
+      document.getElementById('userAvatar').textContent=(name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('')||'S').toUpperCase();
+      document.getElementById('lastLogin').textContent=profile?.last_seen?new Date(profile.last_seen).toLocaleString():'Just now';
+      const {data:attempts}=await gedSupabase.from('quiz_attempts').select('chapter_id,score,total,created_at').eq('user_id',user.id).order('created_at',{ascending:false});
+      const unique=new Map();(attempts||[]).forEach(a=>{if(!unique.has(a.chapter_id))unique.set(a.chapter_id,a)});
+      const progress=Math.round(unique.size/13*100);
+      const fill=document.querySelector('.progress-fill');if(fill)fill.style.width=progress+'%';
+      const cp=document.getElementById('courseProgress');if(cp)cp.textContent=progress+'%';
+      const nc=document.getElementById('nextChapter');if(nc)nc.textContent=unique.size<13?'Chapter '+(unique.size+1):'All chapters';
+      const summary=document.getElementById('scoreSummary');
+      if(summary){
+        summary.textContent=unique.size?unique.size+' of 13 chapters attempted':'No quiz attempts yet';
       }
-
-      const userEmail =
-        sessionStorage.getItem('ged_user_email') ||
-        localStorage.getItem('ged_user_email') ||
-        'student@gedprep.com';
-
-      // If no session, redirect to login
-      if (!hasSession) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // Update user information
-      if (userEmail) {
-        // Update email display
-        document.getElementById('userEmail').textContent = userEmail;
-        
-        // Update welcome message
-        document.getElementById('welcomeMessage').innerHTML = `Welcome back, <strong>${userEmail}</strong>! Select a chapter to continue your GED preparation.`;
-        
-        // Set user avatar initial
-        const initials = userEmail.split('@')[0].substring(0, 2).toUpperCase();
-        document.getElementById('userAvatar').textContent = initials;
-        
-        // Update last login time
-        const now = new Date();
-        const lastLogin = localStorage.getItem('ged_last_login');
-        if (lastLogin) {
-          document.getElementById('lastLogin').textContent =
-            new Date(lastLogin).toLocaleString('en-US', {
-              weekday: 'short', month: 'short', day: 'numeric',
-              hour: '2-digit', minute: '2-digit'
-            });
-        }
-      }
-      
-      // Calculate progress from completed practice sets.
-      const quizKeys = ['ged_quiz_p1', 'ged_quiz_p2', 'ged_quiz_p3', 'ged_quiz_p4'];
-      const completed = quizKeys.filter(key => localStorage.getItem(key)).length;
-      const progress = Math.round((completed / quizKeys.length) * 100);
-      const progressFill = document.querySelector('.progress-fill');
-      const progressText = document.getElementById('courseProgress');
-      const nextText = document.getElementById('nextChapter');
-      if (progressFill) progressFill.style.width = progress + '%';
-      if (progressText) progressText.textContent = progress + '%';
-      if (nextText) nextText.textContent =
-        completed < quizKeys.length ? 'Practice Set ' + (completed + 1) : 'All practice sets complete';
+      const admin=document.getElementById('adminLink');if(admin&&profile?.role==='admin')admin.style.display='inline-flex';
     });
-    
-    // Logout function with confirmation
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        sessionStorage.removeItem('ged_logged_in');
-        sessionStorage.removeItem('ged_user_email');
-        localStorage.removeItem('ged_persist_session');
-        window.location.href = 'index.html';
-      }
-    }
-    
-    // Add keyboard shortcut for logout (Ctrl+L)
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.key === 'l') {
-        e.preventDefault();
-        logout();
-      }
-    });
+    function logout(){if(confirm('Sign out of your GED Prep account?'))gedSignOut()}
+    document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='l'){e.preventDefault();logout()}})
   </script>
   <style>
     /* Professional Dashboard Style */
@@ -391,71 +340,72 @@
         <span>Course Progress: <strong id="courseProgress">0%</strong></span>
         <span>Next: <strong id="nextChapter">Practice Set 1</strong></span>
       </div>
+    <div id="scoreSummary" style="font-size:13px;color:var(--text-light);margin-top:-26px;margin-bottom:28px;">Loading quiz history…</div>
     </header>
 
     <section class="grid" aria-label="Chapters">
       <!-- Chapter links with numbers -->
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=1">
         <div class="card-number">01</div>
         <strong>Whole Numbers and Integers</strong>
         <small>Master basic arithmetic operations and number properties</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=2">
         <div class="card-number">02</div>
         <strong>Exponents, Roots, and Properties</strong>
         <small>Understand powers, roots, and number classifications</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=3">
         <div class="card-number">03</div>
         <strong>Fractions and Operations</strong>
         <small>Learn fraction arithmetic and applications</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=4">
         <div class="card-number">04</div>
         <strong>Decimal Numbers</strong>
         <small>Work with decimals and decimal operations</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=5">
         <div class="card-number">05</div>
         <strong>Ratios, Rates, and Proportions</strong>
         <small>Solve problems using ratios and proportional reasoning</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=6">
         <div class="card-number">06</div>
         <strong>Percents and Applications</strong>
         <small>Calculate percentages and solve real-world problems</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=7">
         <div class="card-number">07</div>
         <strong>Statistics</strong>
         <small>Analyze data using statistical methods</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=8">
         <div class="card-number">08</div>
         <strong>Probability and Counting</strong>
         <small>Calculate probabilities and counting principles</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=9">
         <div class="card-number">09</div>
         <strong>Geometry</strong>
         <small>Study shapes, measurements, and spatial reasoning</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=10">
         <div class="card-number">10</div>
         <strong>Polynomial Expressions</strong>
         <small>Work with polynomials and rational expressions</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=11">
         <div class="card-number">11</div>
         <strong>Equations and Inequalities</strong>
         <small>Solve linear equations and inequalities</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=12">
         <div class="card-number">12</div>
         <strong>Graphing Equations</strong>
         <small>Graph linear and quadratic equations</small>
       </a>
-      <a class="card" href="comingsoon.html">
+      <a class="card" href="quiz.html?chapter=13">
         <div class="card-number">13</div>
         <strong>Functions</strong>
         <small>Understand function concepts and applications</small>
@@ -467,9 +417,13 @@
         <span>📝</span>
         Practice Questions
       </a>
-      <a class="btn secondary" href="comingsoon.html">
+      <a class="btn secondary" href="practice.html">
         <span>📚</span>
-        View Resources
+        View Practice Topics
+      </a>
+      <a id="adminLink" class="btn secondary" href="admin.html" style="display:none">
+        <span>⚙️</span>
+        Admin
       </a>
       <button class="btn logout" onclick="logout()">
         <span>🚪</span>
