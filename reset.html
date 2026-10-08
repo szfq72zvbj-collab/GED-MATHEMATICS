@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GED Prep — Reset Password</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f5f8fc;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:grid;place-items:center;padding:24px;color:#172033}.card{width:min(460px,100%);background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:30px;box-shadow:0 20px 60px rgba(15,23,42,.08)}h1{margin:0 0 8px}.muted{color:#667085;line-height:1.55}label{display:block;font-weight:800;font-size:13px;margin:18px 0 7px}input{width:100%;padding:13px;border:1px solid #d8dfeb;border-radius:10px;font:inherit}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer}.msg{margin-top:14px;padding:12px;border-radius:10px;display:none}.show{display:block}.ok{background:#ecfdf5;color:#065f46}.err{background:#fff1f2;color:#9f1239}.back{display:block;text-align:center;margin-top:18px;color:#2563eb;text-decoration:none;font-weight:700}</style></head>
+<body><main class="card"><h1>Reset your password</h1><p class="muted">Enter the email address on your GED Prep account. We'll send a secure reset link.</p><div id="msg" class="msg"></div>
+<form id="form"><label for="email">Email</label><input id="email" type="email" required placeholder="you@example.com" autocomplete="email"><button id="btn">Send reset link</button></form><a class="back" href="index.html">Back to sign in</a></main>
+<script>
+const msg=document.getElementById("msg");function show(t,ok){msg.textContent=t;msg.className="msg show "+(ok?"ok":"err")}
+if(!GED_AUTH_READY)show(GED_AUTH_ERROR,false);
+document.getElementById("form").addEventListener("submit",async e=>{
+ e.preventDefault();if(!GED_AUTH_READY)return show(GED_AUTH_ERROR,false);
+ const b=document.getElementById("btn");b.disabled=true;b.textContent="Sending…";
+ const {error}=await gedSupabase.auth.resetPasswordForEmail(document.getElementById("email").value.trim(),{redirectTo:location.origin+location.pathname.replace(/[^/]+$/,"")+"reset-password.html"});
+ b.disabled=false;b.textContent="Send reset link";
+ if(error)return show(error.message,false);
+ show("Reset link sent. Check your email and follow the secure link.",true);
+});
+</script></body></html>
