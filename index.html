@@ -601,6 +601,14 @@
       border: 2px solid rgba(16, 185, 129, 0.2);
     }
 
+    .message.info {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.03) 100%);
+      border-color: rgba(37, 99, 235, 0.25);
+      color: #1e3a8a;
+      display: block;
+      border: 2px solid rgba(37, 99, 235, 0.18);
+    }
+
     .message.error {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
       border-color: var(--error);
@@ -892,7 +900,7 @@
     <form id="loginForm">
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+        <input type="text" id="email" class="form-control" placeholder="you@example.com or username" autocomplete="username" required>
         <div id="emailError" class="error-message">Please enter a valid email address.</div>
       </div>
 
@@ -939,10 +947,21 @@
   </main>
 
   <script>
-    // Clear any existing session when landing on login page
-    sessionStorage.removeItem('ged_logged_in');
-    sessionStorage.removeItem('ged_user_email');
-    
+    // Keep an existing signed-in session alive. Logout explicitly clears it.
+    if (
+      sessionStorage.getItem('ged_logged_in') === 'true' ||
+      localStorage.getItem('ged_persist_session') === 'true'
+    ) {
+      if (localStorage.getItem('ged_persist_session') === 'true') {
+        sessionStorage.setItem('ged_logged_in', 'true');
+        const savedEmail = localStorage.getItem('ged_user_email');
+        if (savedEmail) sessionStorage.setItem('ged_user_email', savedEmail);
+      }
+      window.location.replace('dashboard.html');
+    }
+
+    // DOM Elements
+
     // DOM Elements
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
@@ -962,6 +981,9 @@
       email: 'shay@ged.com',
       password: '2026ged'
     };
+
+    const savedEmail = localStorage.getItem('ged_user_email');
+    if (savedEmail && !emailInput.value) emailInput.value = savedEmail;
 
     // Password toggle functionality
     passwordToggle.addEventListener('click', function() {
@@ -986,13 +1008,15 @@
     function showError(element, message) {
       element.textContent = message;
       element.classList.add('show');
-      element.previousElementSibling.previousElementSibling.classList.add('error');
+      const input = element.closest('.form-group')?.querySelector('.form-control');
+      input?.classList.add('error');
     }
 
     // Hide error message
     function hideError(element) {
       element.classList.remove('show');
-      element.previousElementSibling.previousElementSibling.classList.remove('error');
+      const input = element.closest('.form-group')?.querySelector('.form-control');
+      input?.classList.remove('error');
     }
 
     // Show message with animation
@@ -1058,7 +1082,9 @@
           const password = passwordInput.value;
           
           // Check credentials - accept either "shay" as username or email
-          if ((email === demoCredentials.email || email === 'shay@example.com') && 
+          if ((email.toLowerCase() === demoCredentials.email || 
+               email.toLowerCase() === 'shay@example.com' ||
+               email.toLowerCase() === 'shay') &&
               password === demoCredentials.password) {
             showMessage('success', 'Login successful! Redirecting to your dashboard...');
             
@@ -1122,7 +1148,7 @@
     // Forgot password link
     document.querySelector('.forgot-link').addEventListener('click', function(e) {
       e.preventDefault();
-      showMessage('info', 'Please contact support at support@gedprep.com for password assistance.');
+      showMessage('info', 'For this demo site, password recovery is not connected to an email service yet. Use the demo account or contact the site administrator.');
     });
     
     // Add fade-out animation to CSS
