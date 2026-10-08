@@ -1000,7 +1000,7 @@
     });
     signupLink.addEventListener('click',e=>{e.preventDefault();window.location.href='signup.html'});
     document.querySelector('.forgot-link').addEventListener('click',e=>{
-      e.preventDefault();showMessage('info','Password recovery can be enabled in Supabase Auth once the backend is configured.');
+      e.preventDefault();window.location.href='reset.html';
     });
     emailInput.addEventListener('input',()=>hideError(emailError));
     passwordInput.addEventListener('input',()=>hideError(passwordError));
